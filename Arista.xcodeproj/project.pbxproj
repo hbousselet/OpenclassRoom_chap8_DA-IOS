@@ -24,6 +24,7 @@
 		A3BD44F22D60D4FE005B578D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44F12D60D4FE005B578D /* User.swift */; };
 		A3BD44F42D60D515005B578D /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44F32D60D515005B578D /* Exercise.swift */; };
 		A3BD44F62D60D52C005B578D /* Sleep.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44F52D60D52C005B578D /* Sleep.swift */; };
+		A3BD45102D60DE02005B578D /* DefaultDatas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD450F2D60DE02005B578D /* DefaultDatas.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		A3BD44F12D60D4FE005B578D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		A3BD44F32D60D515005B578D /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		A3BD44F52D60D52C005B578D /* Sleep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sleep.swift; sourceTree = "<group>"; };
+		A3BD450F2D60DE02005B578D /* DefaultDatas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDatas.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +183,7 @@
 				A3BD44F12D60D4FE005B578D /* User.swift */,
 				A3BD44F32D60D515005B578D /* Exercise.swift */,
 				A3BD44F52D60D52C005B578D /* Sleep.swift */,
+				A3BD450F2D60DE02005B578D /* DefaultDatas.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E5873A2B235E9000E4EF99 /* Persistence.swift in Sources */,
+				A3BD45102D60DE02005B578D /* DefaultDatas.swift in Sources */,
 				53E587712B23714800E4EF99 /* SleepHistoryViewModel.swift in Sources */,
 				53E587632B235FF600E4EF99 /* UserDataView.swift in Sources */,
 				53E587672B23600C00E4EF99 /* SleepHistoryView.swift in Sources */,
