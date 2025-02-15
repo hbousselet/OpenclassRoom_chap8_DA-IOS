@@ -8,10 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		53E587312B235E8F00E4EF99 /* AristaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587302B235E8F00E4EF99 /* AristaApp.swift */; };
-		53E587352B235E9000E4EF99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E587342B235E9000E4EF99 /* Assets.xcassets */; };
-		53E587382B235E9000E4EF99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E587372B235E9000E4EF99 /* Preview Assets.xcassets */; };
 		53E5873A2B235E9000E4EF99 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587392B235E9000E4EF99 /* Persistence.swift */; };
-		53E5873D2B235E9000E4EF99 /* Arista.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 53E5873B2B235E9000E4EF99 /* Arista.xcdatamodeld */; };
 		53E587472B235E9000E4EF99 /* AristaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587462B235E9000E4EF99 /* AristaTests.swift */; };
 		53E587512B235E9000E4EF99 /* AristaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587502B235E9000E4EF99 /* AristaUITests.swift */; };
 		53E587532B235E9000E4EF99 /* AristaUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587522B235E9000E4EF99 /* AristaUITestsLaunchTests.swift */; };
@@ -23,6 +20,7 @@
 		53E5876D2B236D9E00E4EF99 /* AddExerciseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E5876C2B236D9E00E4EF99 /* AddExerciseView.swift */; };
 		53E5876F2B236DBC00E4EF99 /* AddExerciseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E5876E2B236DBC00E4EF99 /* AddExerciseViewModel.swift */; };
 		53E587712B23714800E4EF99 /* SleepHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587702B23714800E4EF99 /* SleepHistoryViewModel.swift */; };
+		A3DEC78B2D60CD3100500C54 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DEC78A2D60CD3100500C54 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,7 +46,6 @@
 		53E587342B235E9000E4EF99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		53E587372B235E9000E4EF99 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		53E587392B235E9000E4EF99 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		53E5873C2B235E9000E4EF99 /* Arista.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Arista.xcdatamodel; sourceTree = "<group>"; };
 		53E587422B235E9000E4EF99 /* AristaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AristaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E587462B235E9000E4EF99 /* AristaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AristaTests.swift; sourceTree = "<group>"; };
 		53E5874C2B235E9000E4EF99 /* AristaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AristaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +59,7 @@
 		53E5876C2B236D9E00E4EF99 /* AddExerciseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExerciseView.swift; sourceTree = "<group>"; };
 		53E5876E2B236DBC00E4EF99 /* AddExerciseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExerciseViewModel.swift; sourceTree = "<group>"; };
 		53E587702B23714800E4EF99 /* SleepHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepHistoryViewModel.swift; sourceTree = "<group>"; };
+		A3DEC78A2D60CD3100500C54 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = User.swift; path = Arista/User.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,7 +116,6 @@
 				53E587302B235E8F00E4EF99 /* AristaApp.swift */,
 				53E587342B235E9000E4EF99 /* Assets.xcassets */,
 				53E587392B235E9000E4EF99 /* Persistence.swift */,
-				53E5873B2B235E9000E4EF99 /* Arista.xcdatamodeld */,
 				53E587362B235E9000E4EF99 /* Preview Content */,
 			);
 			path = Arista;
@@ -152,6 +149,7 @@
 		53E5875F2B235FD200E4EF99 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A3DEC78A2D60CD3100500C54 /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -282,8 +280,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53E587382B235E9000E4EF99 /* Preview Assets.xcassets in Resources */,
-				53E587352B235E9000E4EF99 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,7 +311,7 @@
 				53E587312B235E8F00E4EF99 /* AristaApp.swift in Sources */,
 				53E587652B23600400E4EF99 /* ExerciseListView.swift in Sources */,
 				53E5876B2B23648500E4EF99 /* ExerciseListViewModel.swift in Sources */,
-				53E5873D2B235E9000E4EF99 /* Arista.xcdatamodeld in Sources */,
+				A3DEC78B2D60CD3100500C54 /* User.swift in Sources */,
 				53E5876D2B236D9E00E4EF99 /* AddExerciseView.swift in Sources */,
 				53E5876F2B236DBC00E4EF99 /* AddExerciseViewModel.swift in Sources */,
 				53E587692B23616A00E4EF99 /* UserDataViewModel.swift in Sources */,
@@ -482,6 +478,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Arista/Preview Content\"";
+				DEVELOPMENT_TEAM = WA9JQ35WLM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -510,6 +507,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Arista/Preview Content\"";
+				DEVELOPMENT_TEAM = WA9JQ35WLM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -642,19 +640,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		53E5873B2B235E9000E4EF99 /* Arista.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				53E5873C2B235E9000E4EF99 /* Arista.xcdatamodel */,
-			);
-			currentVersion = 53E5873C2B235E9000E4EF99 /* Arista.xcdatamodel */;
-			path = Arista.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 53E587252B235E8F00E4EF99 /* Project object */;
 }
