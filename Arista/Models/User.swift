@@ -11,4 +11,9 @@ import CoreData
 
 extension User {
     
+    static func getUser(context: NSManagedObjectContext) throws -> User? {
+        let request = NSFetchRequest<User>(entityName: "User")
+        request.fetchLimit = 1
+        return try context.fetch(request).first
+    }
 }
