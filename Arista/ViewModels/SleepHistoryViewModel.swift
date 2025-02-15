@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 class SleepHistoryViewModel: ObservableObject {
-    @Published var sleepSessions = [FakeSleepSession]()
+    @Published var sleepSessions = [Sleep]()
     
     private var viewContext: NSManagedObjectContext
     
@@ -19,23 +19,18 @@ class SleepHistoryViewModel: ObservableObject {
     }
     
     private func fetchSleepSessions() {
-        
-        sleepSessions = [FakeSleepSession(), 
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession(),
-                         FakeSleepSession()]
+        do {
+            let sleeps = try Sleep.getSleeps(context: viewContext)
+            sleepSessions = sleeps
+        } catch {
+            
+        }
     }
 }
 
-struct FakeSleepSession: Identifiable {
-    var id = UUID()
-    var startDate: Date = Date()
-    var duration: Int = 695
-    var quality: Int = (0...10).randomElement()!
-}
+//struct FakeSleepSession: Identifiable {
+//    var id = UUID()
+//    var startDate: Date = Date()
+//    var duration: Int = 695
+//    var quality: Int = (0...10).randomElement()!
+//}

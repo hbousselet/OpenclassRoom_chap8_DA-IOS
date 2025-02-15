@@ -10,9 +10,9 @@ import CoreData
 
 class AddExerciseViewModel: ObservableObject {
     @Published var category: String = ""
-    @Published var startTime: String = ""
-    @Published var duration: String = ""
-    @Published var intensity: String = ""
+    @Published var startTime: Date = Date()
+    @Published var duration: Int = 0
+    @Published var intensity: Int = 0
 
     private var viewContext: NSManagedObjectContext
 
@@ -21,7 +21,15 @@ class AddExerciseViewModel: ObservableObject {
     }
 
     func addExercise() -> Bool {
-        // TODO: Ajouter ici la logique pour créer et sauvegarder un nouvel exercice dans CoreData
-        return true
+        do {
+            try Exercise.saveExercise(context: viewContext,
+                                      category: category,
+                                      duration: duration,
+                                      intensity: intensity,
+                                      startDate: startTime)
+            return true
+        } catch {
+            return false
+        }
     }
 }
