@@ -11,6 +11,9 @@ import CoreData
 class SleepHistoryViewModel: ObservableObject {
     @Published var sleepSessions = [Sleep]()
     
+    var showAlert: Bool = false
+    var alertReason: ErrorHandler = .none
+    
     private var viewContext: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
@@ -23,14 +26,8 @@ class SleepHistoryViewModel: ObservableObject {
             let sleeps = try Sleep.getSleeps(context: viewContext)
             sleepSessions = sleeps
         } catch {
-            
+            showAlert = true
+            alertReason = .fetchCoreDataFailed(" Not able to fetch your sleep datas: \(error.localizedDescription)")
         }
     }
 }
-
-//struct FakeSleepSession: Identifiable {
-//    var id = UUID()
-//    var startDate: Date = Date()
-//    var duration: Int = 695
-//    var quality: Int = (0...10).randomElement()!
-//}

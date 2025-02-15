@@ -11,6 +11,9 @@ import CoreData
 
 class ExerciseListViewModel: ObservableObject {
     @Published var exercises = [Exercise]()
+    
+    var showAlert: Bool = false
+    var alertReason: ErrorHandler = .none
 
     var viewContext: NSManagedObjectContext
 
@@ -19,21 +22,13 @@ class ExerciseListViewModel: ObservableObject {
         fetchExercises()
     }
 
-    private func fetchExercises() {
+    func fetchExercises() {
         do {
             let exercisesFromDB = try Exercise.getExercises(context: viewContext)
             exercises = exercisesFromDB
         } catch {
-            
+            showAlert = true
+            alertReason = .fetchCoreDataFailed(" Not able to fetch exercises: \(error.localizedDescription)")
         }
     }
-}
-
-struct FakeExercise: Identifiable {
-    var id = UUID()
-    
-    var category: String = "Football"
-    var duration: Int = 120
-    var intensity: Int = 8
-    var date: Date = Date()
 }

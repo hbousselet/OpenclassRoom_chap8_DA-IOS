@@ -25,6 +25,17 @@ struct UserDataView: View {
             Spacer()
         }
         .edgesIgnoringSafeArea(.all)
+        .alert(
+            "Error to load user datas.",
+            isPresented: $viewModel.showAlert,
+            presenting: viewModel.alertReason.failureReason,
+            actions: { reason in
+                Button("OK", role: .cancel) { }
+            },
+            message: { reason in
+                Text(reason)
+            }
+        )
     }
 }
 

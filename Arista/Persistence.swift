@@ -48,6 +48,6 @@ struct PersistenceController {
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
-        try! DefaultData(viewContext: container.viewContext).apply()
+        try? DefaultData(viewContext: container.viewContext).apply()
     }
 }

@@ -26,6 +26,10 @@ extension Exercise {
         exercice.startDate = startDate
         exercice.intensity = Int64(intensity)
         exercice.duration = Int64(duration)
-        try context.save()
+        do {
+            try context.save()
+        } catch let error as NSError {
+            print("Erreur lors de l'enregistrement du contexte : \(error), \(error.userInfo)")
+        }
     }
 }

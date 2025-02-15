@@ -21,6 +21,8 @@ struct DefaultData {
             let initialUser = User(context: viewContext)
             initialUser.firstName = "Charlotte"
             initialUser.lastName = "Razoul"
+            initialUser.password = "blabla"
+            initialUser.email = "charlotte.razoul@gmail.com"
             
             if try Sleep.getSleeps(context: viewContext).isEmpty {
                 let sleep1 = Sleep(context: viewContext)

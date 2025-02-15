@@ -13,6 +13,9 @@ class AddExerciseViewModel: ObservableObject {
     @Published var startTime: Date = Date()
     @Published var duration: Int = 0
     @Published var intensity: Int = 0
+    
+    @Published var showAlert: Bool = false
+    @Published var alertReason: ErrorHandler = .none
 
     private var viewContext: NSManagedObjectContext
 
@@ -29,6 +32,9 @@ class AddExerciseViewModel: ObservableObject {
                                       startDate: startTime)
             return true
         } catch {
+            print(("Not able to send exercise data: \(error.localizedDescription)"))
+            showAlert = true
+            alertReason = .writeInCoreDataFailed("Not able to write your exercise in DB: \(error.localizedDescription)")
             return false
         }
     }

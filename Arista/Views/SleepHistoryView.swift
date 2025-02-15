@@ -13,15 +13,26 @@ struct SleepHistoryView: View {
         var body: some View {
             List(viewModel.sleepSessions) { session in
                 HStack {
-                    QualityIndicator(quality: session.quality)
+                    QualityIndicator(quality: Int(session.quality))
                         .padding()
                     VStack(alignment: .leading) {
-                        Text("Début : \(session.startDate.formatted())")
+                        Text("Début : \(String(describing: session.startDate?.formatted()))")
                         Text("Durée : \(session.duration/60) heures")
                     }
                 }
             }
             .navigationTitle("Historique de Sommeil")
+            .alert(
+                "Error to load sleep datas.",
+                isPresented: $viewModel.showAlert,
+                presenting: viewModel.alertReason.failureReason,
+                actions: { reason in
+                    Button("OK", role: .cancel) { }
+                },
+                message: { reason in
+                    Text(reason)
+                }
+            )
         }
 }
 

@@ -11,6 +11,9 @@ import CoreData
 class UserDataViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
+    
+    var showAlert: Bool = false
+    var alertReason: ErrorHandler = .none
 
     private var viewContext: NSManagedObjectContext
 
@@ -25,7 +28,24 @@ class UserDataViewModel: ObservableObject {
             firstName = user.firstName ?? ""
             lastName = user.lastName ?? ""
         } catch {
-            
+            showAlert = true
+            alertReason = .fetchCoreDataFailed(" Not able to fetch users data: \(error.localizedDescription)")
+            print("Not able to fetch users data: \(error.localizedDescription)")
+        }
+    }
+}
+
+
+enum ErrorHandler: Error {
+    case none
+    case fetchCoreDataFailed(String)
+    case writeInCoreDataFailed(String)
+    
+    var failureReason: String? {
+        switch self {
+        case .fetchCoreDataFailed(let reason): return reason
+        case .writeInCoreDataFailed(let reason): return reason
+        default: return nil
         }
     }
 }

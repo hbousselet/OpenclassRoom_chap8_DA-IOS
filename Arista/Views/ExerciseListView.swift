@@ -15,19 +15,22 @@ struct ExerciseListView: View {
         NavigationView {
             List(viewModel.exercises) { exercise in
                 HStack {
-                    Image(systemName: iconForCategory(exercise.category))
+                    Image(systemName: iconForCategory(exercise.category ?? "questionmark"))
                     VStack(alignment: .leading) {
-                        Text(exercise.category)
+                        Text(exercise.category ?? "Unknown")
                             .font(.headline)
                         Text("Durée: \(exercise.duration) min")
                             .font(.subheadline)
-                        Text(exercise.date.formatted())
+                        Text(exercise.startDate?.formatted() ?? "not found")
                             .font(.subheadline)
                         
                     }
                     Spacer()
-                    IntensityIndicator(intensity: exercise.intensity)
+                    IntensityIndicator(intensity: Int(exercise.intensity))
                 }
+            }
+            .refreshable {
+                viewModel.fetchExercises()
             }
             .navigationTitle("Exercices")
             .navigationBarItems(trailing: Button(action: {
@@ -36,10 +39,27 @@ struct ExerciseListView: View {
                 Image(systemName: "plus")
             })
         }
-        .sheet(isPresented: $showingAddExerciseView) {
+        .sheet(isPresented: $showingAddExerciseView, onDismiss: didDismiss) {
             AddExerciseView(viewModel: AddExerciseViewModel(context: viewModel.viewContext))
         }
-        
+        .alert(
+            "Error to load exercise datas.",
+            isPresented: $viewModel.showAlert,
+            presenting: viewModel.alertReason.failureReason,
+            actions: { reason in
+                Button("OK", role: .cancel) { }
+            },
+            message: { reason in
+                Text(reason)
+            }
+        )
+        .onAppear {
+            viewModel.fetchExercises()
+        }
+    }
+    
+    func didDismiss() {
+        viewModel.fetchExercises()
     }
     
     func iconForCategory(_ category: String) -> String {
