@@ -16,7 +16,15 @@ struct SleepHistoryView: View {
                     QualityIndicator(quality: Int(session.quality))
                         .padding()
                     VStack(alignment: .leading) {
-                        Text("Début : \(String(describing: session.startDate?.formatted()))")
+                        if let date = session.startDate {
+                            Text(date.formatted(.dateTime
+                                .day()
+                                .month(.wide)
+                                .weekday(.wide)
+                                .hour(.conversationalTwoDigits(amPM: .wide))
+                                .minute(.twoDigits)
+                                .locale(Locale(identifier: "fr_FR"))))
+                        }
                         Text("Durée : \(session.duration/60) heures")
                     }
                 }

@@ -34,18 +34,3 @@ class UserDataViewModel: ObservableObject {
         }
     }
 }
-
-
-enum ErrorHandler: Error {
-    case none
-    case fetchCoreDataFailed(String)
-    case writeInCoreDataFailed(String)
-    
-    var failureReason: String? {
-        switch self {
-        case .fetchCoreDataFailed(let reason): return reason
-        case .writeInCoreDataFailed(let reason): return reason
-        default: return nil
-        }
-    }
-}

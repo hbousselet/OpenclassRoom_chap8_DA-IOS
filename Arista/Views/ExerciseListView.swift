@@ -13,20 +13,27 @@ struct ExerciseListView: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.exercises) { exercise in
-                HStack {
-                    Image(systemName: iconForCategory(exercise.category ?? "questionmark"))
-                    VStack(alignment: .leading) {
-                        Text(exercise.category ?? "Unknown")
-                            .font(.headline)
-                        Text("Durée: \(exercise.duration) min")
-                            .font(.subheadline)
-                        Text(exercise.startDate?.formatted() ?? "not found")
-                            .font(.subheadline)
-                        
+            List {
+                ForEach(viewModel.exercises) { exercise in
+                    HStack {
+                        Image(systemName: iconForCategory(exercise.category ?? "questionmark"))
+                        VStack(alignment: .leading) {
+                            Text(exercise.category ?? "Unknown")
+                                .font(.headline)
+                            Text("Durée: \(exercise.duration) min")
+                                .font(.subheadline)
+                            Text(exercise.startDate?.formatted() ?? "not found")
+                                .font(.subheadline)
+                            
+                        }
+                        Spacer()
+                        IntensityIndicator(intensity: Int(exercise.intensity))
                     }
-                    Spacer()
-                    IntensityIndicator(intensity: Int(exercise.intensity))
+                }
+                .onDelete { indexSet in
+                    withAnimation {
+                        viewModel.deleteExercise(at: indexSet)
+                    }
                 }
             }
             .refreshable {

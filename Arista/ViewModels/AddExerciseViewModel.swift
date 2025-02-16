@@ -32,10 +32,13 @@ class AddExerciseViewModel: ObservableObject {
                                       startDate: startTime)
             return true
         } catch {
-            print(("Not able to send exercise data: \(error.localizedDescription)"))
             showAlert = true
             alertReason = .writeInCoreDataFailed("Not able to write your exercise in DB: \(error.localizedDescription)")
             return false
         }
+    }
+    
+    func checkDurationValidity() {
+        
     }
 }

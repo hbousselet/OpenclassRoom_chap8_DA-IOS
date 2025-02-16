@@ -32,4 +32,10 @@ extension Exercise {
             print("Erreur lors de l'enregistrement du contexte : \(error), \(error.userInfo)")
         }
     }
+    
+    static func delete(context: NSManagedObjectContext, exercises: [Exercise]) {
+        for exercise in exercises {
+            context.delete(exercise)
+        }
+    }
 }

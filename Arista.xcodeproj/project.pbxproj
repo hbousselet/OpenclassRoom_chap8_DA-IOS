@@ -25,6 +25,15 @@
 		A3BD44F42D60D515005B578D /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44F32D60D515005B578D /* Exercise.swift */; };
 		A3BD44F62D60D52C005B578D /* Sleep.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44F52D60D52C005B578D /* Sleep.swift */; };
 		A3BD45102D60DE02005B578D /* DefaultDatas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD450F2D60DE02005B578D /* DefaultDatas.swift */; };
+		A3C10B3D2D61EAB6006F8002 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B3C2D61EAB6006F8002 /* Extensions.swift */; };
+		A3C10B572D61EEBD006F8002 /* ExerciceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B562D61EEBD006F8002 /* ExerciceTests.swift */; };
+		A3C10B8D2D62054D006F8002 /* SleepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B8C2D62054D006F8002 /* SleepTests.swift */; };
+		A3C10B8F2D62055F006F8002 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B8E2D62055F006F8002 /* UserTests.swift */; };
+		A3C10B912D620571006F8002 /* ExerciseAddTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B902D620571006F8002 /* ExerciseAddTests.swift */; };
+		A3C10B952D6222A4006F8002 /* ExerciseListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B942D6222A4006F8002 /* ExerciseListViewModelTests.swift */; };
+		A3C10B972D6228F3006F8002 /* UserDataViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B962D6228F3006F8002 /* UserDataViewModelTests.swift */; };
+		A3C10B992D622907006F8002 /* AddExerciseViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B982D622907006F8002 /* AddExerciseViewModelTests.swift */; };
+		A3C10B9B2D622917006F8002 /* SleepHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B9A2D622917006F8002 /* SleepHistoryViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +77,15 @@
 		A3BD44F32D60D515005B578D /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		A3BD44F52D60D52C005B578D /* Sleep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sleep.swift; sourceTree = "<group>"; };
 		A3BD450F2D60DE02005B578D /* DefaultDatas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDatas.swift; sourceTree = "<group>"; };
+		A3C10B3C2D61EAB6006F8002 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		A3C10B562D61EEBD006F8002 /* ExerciceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciceTests.swift; sourceTree = "<group>"; };
+		A3C10B8C2D62054D006F8002 /* SleepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTests.swift; sourceTree = "<group>"; };
+		A3C10B8E2D62055F006F8002 /* UserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTests.swift; sourceTree = "<group>"; };
+		A3C10B902D620571006F8002 /* ExerciseAddTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAddTests.swift; sourceTree = "<group>"; };
+		A3C10B942D6222A4006F8002 /* ExerciseListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseListViewModelTests.swift; sourceTree = "<group>"; };
+		A3C10B962D6228F3006F8002 /* UserDataViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataViewModelTests.swift; sourceTree = "<group>"; };
+		A3C10B982D622907006F8002 /* AddExerciseViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExerciseViewModelTests.swift; sourceTree = "<group>"; };
+		A3C10B9A2D622917006F8002 /* SleepHistoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepHistoryViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +144,7 @@
 				53E587392B235E9000E4EF99 /* Persistence.swift */,
 				A3BD44ED2D60D391005B578D /* Arista.xcdatamodeld */,
 				53E587362B235E9000E4EF99 /* Preview Content */,
+				A3C10B3C2D61EAB6006F8002 /* Extensions.swift */,
 			);
 			path = Arista;
 			sourceTree = "<group>";
@@ -141,6 +160,8 @@
 		53E587452B235E9000E4EF99 /* AristaTests */ = {
 			isa = PBXGroup;
 			children = (
+				A3C10B932D622284006F8002 /* ViewModels */,
+				A3C10B922D62227F006F8002 /* Models */,
 				53E587462B235E9000E4EF99 /* AristaTests.swift */,
 			);
 			path = AristaTests;
@@ -186,6 +207,28 @@
 				A3BD450F2D60DE02005B578D /* DefaultDatas.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		A3C10B922D62227F006F8002 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A3C10B562D61EEBD006F8002 /* ExerciceTests.swift */,
+				A3C10B8C2D62054D006F8002 /* SleepTests.swift */,
+				A3C10B8E2D62055F006F8002 /* UserTests.swift */,
+				A3C10B902D620571006F8002 /* ExerciseAddTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A3C10B932D622284006F8002 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A3C10B942D6222A4006F8002 /* ExerciseListViewModelTests.swift */,
+				A3C10B962D6228F3006F8002 /* UserDataViewModelTests.swift */,
+				A3C10B982D622907006F8002 /* AddExerciseViewModelTests.swift */,
+				A3C10B9A2D622917006F8002 /* SleepHistoryViewModelTests.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -327,6 +370,7 @@
 				53E5876B2B23648500E4EF99 /* ExerciseListViewModel.swift in Sources */,
 				53E5876D2B236D9E00E4EF99 /* AddExerciseView.swift in Sources */,
 				A3BD44F22D60D4FE005B578D /* User.swift in Sources */,
+				A3C10B3D2D61EAB6006F8002 /* Extensions.swift in Sources */,
 				A3BD44F42D60D515005B578D /* Exercise.swift in Sources */,
 				53E5876F2B236DBC00E4EF99 /* AddExerciseViewModel.swift in Sources */,
 				53E587692B23616A00E4EF99 /* UserDataViewModel.swift in Sources */,
@@ -338,7 +382,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3C10B8F2D62055F006F8002 /* UserTests.swift in Sources */,
+				A3C10B952D6222A4006F8002 /* ExerciseListViewModelTests.swift in Sources */,
+				A3C10B992D622907006F8002 /* AddExerciseViewModelTests.swift in Sources */,
+				A3C10B9B2D622917006F8002 /* SleepHistoryViewModelTests.swift in Sources */,
+				A3C10B912D620571006F8002 /* ExerciseAddTests.swift in Sources */,
+				A3C10B8D2D62054D006F8002 /* SleepTests.swift in Sources */,
+				A3C10B572D61EEBD006F8002 /* ExerciceTests.swift in Sources */,
 				53E587472B235E9000E4EF99 /* AristaTests.swift in Sources */,
+				A3C10B972D6228F3006F8002 /* UserDataViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

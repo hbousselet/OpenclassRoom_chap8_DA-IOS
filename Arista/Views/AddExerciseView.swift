@@ -13,6 +13,12 @@ struct AddExerciseView: View {
     
     @State private var duration = ""
     @State private var intensity = ""
+    
+//    private static let formatter: NumberFormatter = {
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .decimal
+//        return formatter
+//    }()
 
     var body: some View {
         NavigationView {

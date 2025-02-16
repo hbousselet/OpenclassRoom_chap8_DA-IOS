@@ -31,4 +31,10 @@ class ExerciseListViewModel: ObservableObject {
             alertReason = .fetchCoreDataFailed(" Not able to fetch exercises: \(error.localizedDescription)")
         }
     }
+    
+    func deleteExercise(at offset: IndexSet) {
+        let selectedExercises = offset.map { exercises[$0] }
+        Exercise.delete(context: viewContext, exercises: selectedExercises)
+        fetchExercises()
+    }
 }
