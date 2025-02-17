@@ -18,18 +18,17 @@ class AddExerciseViewModel: ObservableObject {
     @Published var alertReason: ErrorHandler = .none
 
     private var viewContext: NSManagedObjectContext
+    let exerciseRepository: ExerciseRepository
+
 
     init(context: NSManagedObjectContext) {
         self.viewContext = context
+        self.exerciseRepository = .init(viewContext: context)
     }
 
     func addExercise() -> Bool {
         do {
-            try Exercise.saveExercise(context: viewContext,
-                                      category: category,
-                                      duration: duration,
-                                      intensity: intensity,
-                                      startDate: startTime)
+            try exerciseRepository.saveExercise(category: category, duration: duration, intensity: intensity, startDate: startTime)
             return true
         } catch {
             showAlert = true

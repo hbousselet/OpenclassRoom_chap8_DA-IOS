@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 
+@MainActor
 class SleepHistoryViewModel: ObservableObject {
     @Published var sleepSessions = [Sleep]()
     
@@ -15,19 +16,23 @@ class SleepHistoryViewModel: ObservableObject {
     var alertReason: ErrorHandler = .none
     
     private var viewContext: NSManagedObjectContext
+    let sleepRepository: SleepRepository
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
+        self.sleepRepository = SleepRepository(viewContext: viewContext)
         fetchSleepSessions()
     }
     
     private func fetchSleepSessions() {
-        do {
-            let sleeps = try Sleep.getSleeps(context: viewContext)
-            sleepSessions = sleeps
-        } catch {
-            showAlert = true
-            alertReason = .fetchCoreDataFailed(" Not able to fetch your sleep datas: \(error.localizedDescription)")
+        Task {
+            do {
+                let sleeps = try await sleepRepository.getSleepsAsync()
+                sleepSessions = sleeps
+            } catch {
+                showAlert = true
+                alertReason = .fetchCoreDataFailed(" Not able to fetch your sleep datas: \(error.localizedDescription)")
+            }
         }
     }
 }

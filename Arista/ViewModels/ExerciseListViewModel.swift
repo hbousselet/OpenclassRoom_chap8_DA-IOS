@@ -16,15 +16,17 @@ class ExerciseListViewModel: ObservableObject {
     var alertReason: ErrorHandler = .none
 
     var viewContext: NSManagedObjectContext
+    let exerciseRepository: ExerciseRepository
 
     init(context: NSManagedObjectContext) {
         self.viewContext = context
+        self.exerciseRepository = .init(viewContext: context)
         fetchExercises()
     }
 
     func fetchExercises() {
         do {
-            let exercisesFromDB = try Exercise.getExercises(context: viewContext)
+            let exercisesFromDB = try exerciseRepository.getExercises()
             exercises = exercisesFromDB
         } catch {
             showAlert = true
@@ -34,7 +36,7 @@ class ExerciseListViewModel: ObservableObject {
     
     func deleteExercise(at offset: IndexSet) {
         let selectedExercises = offset.map { exercises[$0] }
-        Exercise.delete(context: viewContext, exercises: selectedExercises)
+        exerciseRepository.delete(exercises: selectedExercises)
         fetchExercises()
     }
 }

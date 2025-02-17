@@ -11,6 +11,7 @@ import CoreData
 extension Exercise {
     
     static func getExercises(context: NSManagedObjectContext) throws -> [Exercise] {
+        
         let request: NSFetchRequest = NSFetchRequest<Exercise>(entityName: "Exercise")
         request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
         return try context.fetch(request)
