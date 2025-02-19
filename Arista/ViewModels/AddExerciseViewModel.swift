@@ -17,18 +17,16 @@ class AddExerciseViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var alertReason: ErrorHandler = .none
 
-    private var viewContext: NSManagedObjectContext
     let exerciseRepository: ExerciseRepository
 
 
-    init(context: NSManagedObjectContext) {
-        self.viewContext = context
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.exerciseRepository = .init(viewContext: context)
     }
 
-    func addExercise() -> Bool {
+    func addExercise() async -> Bool {
         do {
-            try exerciseRepository.saveExercise(category: category, duration: duration, intensity: intensity, startDate: startTime)
+            try await exerciseRepository.saveExerciseAsync(category: category, duration: duration, intensity: intensity, startDate: startTime)
             return true
         } catch {
             showAlert = true

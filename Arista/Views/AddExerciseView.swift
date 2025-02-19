@@ -43,8 +43,10 @@ struct AddExerciseView: View {
                 }.formStyle(.grouped)
                 Spacer()
                 Button("Ajouter l'exercice") {
-                    if viewModel.addExercise() {
-                        presentationMode.wrappedValue.dismiss()
+                    Task {
+                        if await viewModel.addExercise() {
+                            presentationMode.wrappedValue.dismiss()
+                        }
                     }
                 }.buttonStyle(.borderedProminent)
                     

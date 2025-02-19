@@ -9,34 +9,50 @@ import Foundation
 
 import CoreData
 
+@MainActor
 class ExerciseListViewModel: ObservableObject {
     @Published var exercises = [Exercise]()
     
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
 
-    var viewContext: NSManagedObjectContext
     let exerciseRepository: ExerciseRepository
 
-    init(context: NSManagedObjectContext) {
-        self.viewContext = context
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.exerciseRepository = .init(viewContext: context)
-        fetchExercises()
     }
 
-    func fetchExercises() {
-        do {
-            let exercisesFromDB = try exerciseRepository.getExercises()
-            exercises = exercisesFromDB
-        } catch {
-            showAlert = true
-            alertReason = .fetchCoreDataFailed(" Not able to fetch exercises: \(error.localizedDescription)")
-        }
-    }
+//    func fetchExercises() {
+//        do {
+//            let exercisesFromDB = try exerciseRepository.getExercises()
+//            exercises = exercisesFromDB
+//        } catch {
+//            showAlert = true
+//            alertReason = .fetchCoreDataFailed(" Not able to fetch exercises: \(error.localizedDescription)")
+//        }
+//    }
     
     func deleteExercise(at offset: IndexSet) {
         let selectedExercises = offset.map { exercises[$0] }
-        exerciseRepository.delete(exercises: selectedExercises)
-        fetchExercises()
+        
+        Task {
+            await exerciseRepository.deleteAsync(exercises: selectedExercises)
+            await fetchExercises()
+        }
+    }
+    
+    func fetchExercises() async {
+        Task {
+            do {
+                guard let exercices = try await exerciseRepository.getExercisesAsync() else {
+                    exercises = []
+                    return
+                }
+                exercises = exercices
+            } catch {
+                showAlert = true
+                alertReason = .fetchCoreDataFailed(" Not able to fetch your exercises datas: \(error.localizedDescription)")
+            }
+        }
     }
 }

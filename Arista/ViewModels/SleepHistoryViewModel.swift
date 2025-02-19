@@ -15,19 +15,20 @@ class SleepHistoryViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
     
-    private var viewContext: NSManagedObjectContext
     let sleepRepository: SleepRepository
     
-    init(context: NSManagedObjectContext) {
-        self.viewContext = context
-        self.sleepRepository = SleepRepository(viewContext: viewContext)
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+        self.sleepRepository = SleepRepository(viewContext: context)
         fetchSleepSessions()
     }
     
     private func fetchSleepSessions() {
         Task {
             do {
-                let sleeps = try await sleepRepository.getSleepsAsync()
+                guard let sleeps = try await sleepRepository.getSleepsAsync() else {
+                    sleepSessions = []
+                    return
+                }
                 sleepSessions = sleeps
             } catch {
                 showAlert = true

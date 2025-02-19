@@ -62,9 +62,9 @@ class ExerciseRepository {
                            intensity: Int,
                            startDate: Date) async throws {
         await viewContext.perform {
-            let exercice = Exercise()
-            exercice.category = category
+            let exercice = Exercise(context: self.viewContext)
             exercice.startDate = startDate
+            exercice.category = category
             exercice.intensity = Int64(intensity)
             exercice.duration = Int64(duration)
             do {

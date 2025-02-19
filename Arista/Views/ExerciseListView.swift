@@ -10,7 +10,7 @@ import SwiftUI
 struct ExerciseListView: View {
     @ObservedObject var viewModel: ExerciseListViewModel
     @State private var showingAddExerciseView = false
-    
+        
     var body: some View {
         NavigationView {
             List {
@@ -37,7 +37,9 @@ struct ExerciseListView: View {
                 }
             }
             .refreshable {
-                viewModel.fetchExercises()
+                Task {
+                    await viewModel.fetchExercises()
+                }
             }
             .navigationTitle("Exercices")
             .navigationBarItems(trailing: Button(action: {
@@ -46,8 +48,12 @@ struct ExerciseListView: View {
                 Image(systemName: "plus")
             })
         }
-        .sheet(isPresented: $showingAddExerciseView, onDismiss: didDismiss) {
-            AddExerciseView(viewModel: AddExerciseViewModel(context: viewModel.viewContext))
+        .sheet(isPresented: $showingAddExerciseView, onDismiss: {
+            Task {
+                await viewModel.fetchExercises()
+            }
+        }) {
+            AddExerciseView(viewModel: AddExerciseViewModel())
         }
         .alert(
             "Error to load exercise datas.",
@@ -60,13 +66,9 @@ struct ExerciseListView: View {
                 Text(reason)
             }
         )
-        .onAppear {
-            viewModel.fetchExercises()
+        .task {
+            await viewModel.fetchExercises()
         }
-    }
-    
-    func didDismiss() {
-        viewModel.fetchExercises()
     }
     
     func iconForCategory(_ category: String) -> String {

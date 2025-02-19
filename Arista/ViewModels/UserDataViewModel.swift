@@ -14,6 +14,11 @@ class UserDataViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     
+    var showAlert: Bool = false
+    var alertReason: ErrorHandler = .none
+    
+    var userRepository: UserRepository
+    
     @Published var bedTimeImagePosition: Position = .zero
     @Published var wakeUpTimeImagePosition: Position = .zero
     
@@ -23,16 +28,8 @@ class UserDataViewModel: ObservableObject {
     let sleepDurationMinutes: Double = 8 * 60
     let maxSleepDurationMinutes: Double = 12 * 60
     
-    var showAlert: Bool = false
-    var alertReason: ErrorHandler = .none
-    
-    var userRepository: UserRepository
-
-    private var viewContext: NSManagedObjectContext
-
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
-        self.viewContext = context
-        self.userRepository = UserRepository(viewContext: viewContext)
+        self.userRepository = UserRepository(viewContext: context)
         fetchUserData()
     }
     
