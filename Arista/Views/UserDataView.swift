@@ -17,7 +17,7 @@ struct UserDataView: View {
             clockMaker()
                 .padding(.top, 50)
             userData
-                .padding(.top, 20)
+                .padding(.top, 40)
             tips
                 .padding(.top, 20)
         }
@@ -54,31 +54,46 @@ struct UserDataView: View {
         }
     }
     
+    @ViewBuilder
     func clockMaker() -> some View {
-        ZStack {
-            Circle()
-                .stroke(lineWidth: 25)
-                .foregroundStyle(.gray).opacity(0.1)
-            ZStack(alignment: .top) {
+        GeometryReader { geometry in
+            ZStack {
                 Circle()
-                    .trim(from: 0.0, to: 0.66)
-                    .stroke(.blue, style: StrokeStyle(
-                        lineWidth: 25.0,
-                        lineCap: .round,
-                        lineJoin: .miter))
-                    .rotationEffect(Angle(degrees: -90))
-                    .shadow(radius: 10)
-                    .zIndex(1)
-                Image(systemName: "plus")
-                    .tint(.red)
-                    .zIndex(2)
+                    .stroke(lineWidth: 25)
+                    .foregroundStyle(.gray).opacity(0.1)
+                    .position(UserDataViewModel.Position.zero.in(geometry))
+                ZStack(alignment: .top) {
+                    Circle()
+                        .trim(from: 0.0, to: 0.66)
+                        .stroke(.blue, style: StrokeStyle(
+                            lineWidth: 25.0,
+                            lineCap: .round,
+                            lineJoin: .miter))
+                        .rotationEffect(Angle(degrees: -90))
+                        .shadow(radius: 10)
+                        .zIndex(1)
+                        .position(UserDataViewModel.Position.zero.in(geometry))
+                    Image(systemName: "plus")
+                        .tint(.red)
+                        .zIndex(2)
+                        .position(viewModel.wakeUpTimeImagePosition.in(geometry))
+                }
+                Image("clock")
+                    .renderingMode(.original)
+                    .resizable()
+                    .scaledToFit()
+                    .position(UserDataViewModel.Position.zero.in(geometry))
             }
-            Image("clock")
-                .renderingMode(.original)
-                .resizable()
-                .scaledToFit()
+            .onAppear {
+                if geometry.size.height > geometry.size.width {
+                    viewModel.radius = geometry.size.width / 2
+                } else {
+                    viewModel.radius = geometry.size.width / 2
+                }
+                viewModel.reComputePosition()
+            }
+//            .padding(.horizontal)
         }
-        .padding(40)
     }
     
     var userData: some View {
@@ -135,7 +150,7 @@ struct UserDataView: View {
                 .font(.headline)
                 .padding(.top)
             RoundedRectangle(cornerRadius: 12)
-                .fill(.gray)
+                .fill(Color(uiColor: .lightGray))
                 .overlay {
                     HStack {
                         VStack(alignment: .leading) {
@@ -164,6 +179,14 @@ struct UserDataView: View {
                 .foregroundStyle(.background)
         }
     }
+    
+//    private func emojiPosition(at location: CGPoint, in geometry: GeometryProxy) -> Emoji.Position {
+//        let center = geometry.frame(in: .local).center
+//        return Emoji.Position(
+//            x: Int((location.x - center.x - pan.width) / zoom),
+//            y: Int(-(location.y - center.y - pan.height) / zoom)
+//        )
+//    }
 }
 
 #Preview {

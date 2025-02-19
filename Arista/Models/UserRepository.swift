@@ -22,17 +22,16 @@ class UserRepository {
     }
     
     func getUserAsync() async throws -> User? {
-        try await viewContext.perform {
+        await viewContext.perform {
             let request = NSFetchRequest<User>(entityName: "User")
             request.fetchLimit = 1
-            guard let fetchResult = try? self.viewContext.fetch(request).first else {
-                throw PrivError.notEnoughPrivileges
+            do {
+                let fetchResult = try self.viewContext.fetch(request).first
+                return fetchResult
+            } catch let error as NSError {
+                print("Erreur pour récupérer les données utilisateur : \(error), \(error.userInfo)")
+                return nil
             }
-            return fetchResult
         }
     }
-}
-
-enum PrivError: Error {
-    case notEnoughPrivileges
 }

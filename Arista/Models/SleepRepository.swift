@@ -21,14 +21,17 @@ class SleepRepository {
         return try viewContext.fetch(request)
     }
     
-    func getSleepsAsync() async throws -> [Sleep] {
-        try await viewContext.perform {
+    func getSleepsAsync() async throws -> [Sleep]? {
+        await viewContext.perform {
             let request: NSFetchRequest = NSFetchRequest<Sleep>(entityName: "Sleep")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-            guard let fetchResult = try? self.viewContext.fetch(request) else {
-                throw PrivError.notEnoughPrivileges
+            do {
+                let fetchResult = try self.viewContext.fetch(request)
+                return fetchResult
+            } catch let error as NSError {
+                print("Erreur pour récupérer les données de sommeil : \(error), \(error.userInfo)")
+                return nil
             }
-            return fetchResult
         }
     }
 }
