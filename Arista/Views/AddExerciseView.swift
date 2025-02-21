@@ -13,12 +13,6 @@ struct AddExerciseView: View {
     
     @State private var duration = ""
     @State private var intensity = ""
-    
-//    private static let formatter: NumberFormatter = {
-//        let formatter = NumberFormatter()
-//        formatter.numberStyle = .decimal
-//        return formatter
-//    }()
 
     var body: some View {
         NavigationView {
@@ -51,7 +45,7 @@ struct AddExerciseView: View {
                 }.buttonStyle(.borderedProminent)
                     
             }
-            .navigationTitle("Nouvel Exercice ...")
+            .navigationTitle("Nouvel Exercice")
             .alert(
                 "Error to load exercise datas.",
                 isPresented: $viewModel.showAlert,
@@ -66,8 +60,4 @@ struct AddExerciseView: View {
             
         }
     }
-}
-
-#Preview {
-    AddExerciseView(viewModel: AddExerciseViewModel(context: PersistenceController.preview.container.viewContext))
 }

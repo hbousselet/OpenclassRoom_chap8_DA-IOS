@@ -20,7 +20,7 @@ class AddExerciseViewModel: ObservableObject {
     let exerciseRepository: ExerciseRepository
 
 
-    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+    init(context: NSManagedObjectContext = PersistenceController.shared.context) {
         self.exerciseRepository = .init(viewContext: context)
     }
 

@@ -11,9 +11,9 @@ import Combine
 
 @testable import Arista
 
+@MainActor
 final class SleepHistoryViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
-    var persistenceForTest = PersistenceController(inMemory: true)
     
     private lazy var fakePersistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "dummyEntity")
@@ -36,20 +36,20 @@ final class SleepHistoryViewModelTests: XCTestCase {
     
     func test_WhenNoSleepIsInDatabase_FetchSleep_ReturnEmptyList() {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
-        let viewModel = SleepHistoryViewModel(context: persistenceController.container.viewContext)
-        
+        let viewModel = SleepHistoryViewModel(context: PersistenceController.shared.context)
+                
         XCTAssert(viewModel.sleepSessions.isEmpty)
     }
     
     
     
-    func test_WhenAddingSeveralSleepsInDatabase_FetchSleeos_ReturnAListContainingTheSleeps() {
+    func test_WhenAddingSeveralSleepsInDatabase_FetchSleeos_ReturnAListContainingTheSleeps() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
+        
+        let viewModel = SleepHistoryViewModel(context: PersistenceController.shared.context)
                 
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -57,29 +57,30 @@ final class SleepHistoryViewModelTests: XCTestCase {
         
         
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 10,
                     quality: 5,
                     startDate: date1,
                     userFirstName: "Erica",
                     userLastName: "Marcusi")
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 120,
                     quality: 1,
                     startDate: date3,
                     userFirstName: "Erice",
                     userLastName: "Marceau")
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 30,
                     quality: 5,
                     startDate: date2,
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
                 
-        let viewModel = SleepHistoryViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch a list of sleeps")
+        let expectation = [XCTestExpectation(description: "fetch a list of sleeps")]
+        
+        await viewModel.fetchSleepSessions()
         
         viewModel.$sleepSessions
             .sink { sleeps in
@@ -88,11 +89,11 @@ final class SleepHistoryViewModelTests: XCTestCase {
                 XCTAssert(sleeps[1].duration == 30)
                 XCTAssert(sleeps[2].duration == 10)
                 XCTAssert(viewModel.showAlert == false)
-                expectation.fulfill()
+                expectation.first?.fulfill()
             }
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 10)
+        await fulfillment(of: expectation)
     }
     
     func test_ToTriggerAlert() {
@@ -103,10 +104,10 @@ final class SleepHistoryViewModelTests: XCTestCase {
     }
 
     private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Exercise.fetchRequest()
+        let fetchRequest = Sleep.fetchRequest()
         let objects = try! context.fetch(fetchRequest)
-        for exercice in objects {
-            context.delete(exercice)
+        for sleep in objects {
+            context.delete(sleep)
         }
         try! context.save()
     }

@@ -17,23 +17,20 @@ class SleepHistoryViewModel: ObservableObject {
     
     let sleepRepository: SleepRepository
     
-    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+    init(context: NSManagedObjectContext = PersistenceController.shared.context) {
         self.sleepRepository = SleepRepository(viewContext: context)
-        fetchSleepSessions()
     }
     
-    private func fetchSleepSessions() {
-        Task {
-            do {
-                guard let sleeps = try await sleepRepository.getSleepsAsync() else {
-                    sleepSessions = []
-                    return
-                }
-                sleepSessions = sleeps
-            } catch {
-                showAlert = true
-                alertReason = .fetchCoreDataFailed(" Not able to fetch your sleep datas: \(error.localizedDescription)")
+    func fetchSleepSessions() async {
+        do {
+            guard let sleeps = try await sleepRepository.getSleepsAsync() else {
+                sleepSessions = []
+                return
             }
+            sleepSessions = sleeps
+        } catch {
+            showAlert = true
+            alertReason = .fetchCoreDataFailed(" Not able to fetch your sleep datas: \(error.localizedDescription)")
         }
     }
 }

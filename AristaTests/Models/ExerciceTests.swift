@@ -3,7 +3,7 @@
 //  AristaTests
 //
 //  Created by Hugues BOUSSELET on 16/02/2025.
-//
+
 
 import XCTest
 import CoreData
@@ -47,46 +47,57 @@ final class ExerciceTests: XCTestCase {
         try! context.save()
     }
     
-    func test_WhenNoExerciseIsInDatabase_GetExercise_ReturnEmptyList() {
+    func test_WhenNoExerciseIsInDatabase_GetExercise_ReturnEmptyList() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
-                
-        let exercises = try! Exercise.getExercises(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
-        XCTAssert(exercises.isEmpty == true)
+        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
+                
+        let exercises = try! await data.getExercisesAsync()
+        
+        guard let exercisesFetched = exercises else {
+            XCTFail("Should return a list of Exercises")
+            return
+        }
+        
+        XCTAssert(exercisesFetched.isEmpty == true)
         
     }
 
-    func test_WhenAddingOneExerciseInDatabase_GetExercise_ReturnAListContainingTheExercise() {
+    func test_WhenAddingOneExerciseInDatabase_GetExercise_ReturnAListContainingTheExercise() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
         let date = Date()
         
-        addExercice(context: persistenceController.container.viewContext,
+        addExercice(context: PersistenceController.shared.context,
                     category: "Football",
                     duration: 10,
                     intensity: 5,
                     startDate: date,
                     userFirstName: "Eric", userLastName: "Marcus")
         
-        let exercises = try! Exercise.getExercises(context: persistenceController.container.viewContext)
-
-        XCTAssert(exercises.isEmpty == false)
-        XCTAssert(exercises.first?.category == "Football")
-        XCTAssert(exercises.first?.duration == 10)
-        XCTAssert(exercises.first?.intensity == 5)
-        XCTAssert(exercises.first?.startDate == date)
+        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
+                
+        let exercises = try! await data.getExercisesAsync()
+        
+        guard let exercisesFetched = exercises else {
+            XCTFail("Should return a list of Exercises")
+            return
+        }
+        
+        XCTAssert(exercisesFetched.isEmpty == false)
+        XCTAssert(exercisesFetched.first?.category == "Football")
+        XCTAssert(exercisesFetched.first?.duration == 10)
+        XCTAssert(exercisesFetched.first?.intensity == 5)
+        XCTAssert(exercisesFetched.first?.startDate == date)
     }
     
     
 
-    func test_WhenAddingMultipleExerciseInDatabase_GetExercise_ReturnAListContainingTheExerciseInTheRightOrder() {
+    func test_WhenAddingMultipleExerciseInDatabase_GetExercise_ReturnAListContainingTheExerciseInTheRightOrder() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -94,7 +105,7 @@ final class ExerciceTests: XCTestCase {
         
         
         
-        addExercice(context: persistenceController.container.viewContext,
+        addExercice(context: PersistenceController.shared.context,
                     category: "Football",
                     duration: 10,
                     intensity: 5,
@@ -102,7 +113,7 @@ final class ExerciceTests: XCTestCase {
                     userFirstName: "Erica",
                     userLastName: "Marcusi")
         
-        addExercice(context: persistenceController.container.viewContext,
+        addExercice(context: PersistenceController.shared.context,
                     category: "Running",
                     duration: 120,
                     intensity: 1,
@@ -110,19 +121,26 @@ final class ExerciceTests: XCTestCase {
                     userFirstName: "Erice",
                     userLastName: "Marceau")
         
-        addExercice(context: persistenceController.container.viewContext,
+        addExercice(context: PersistenceController.shared.context,
                     category: "Fitness",
                     duration: 30,
                     intensity: 5,
                     startDate: date2,
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
-                
-        let exercises = try! Exercise.getExercises(context: persistenceController.container.viewContext)
         
-        XCTAssert(exercises.count == 3)
-        XCTAssert(exercises[0].category == "Running")
-        XCTAssert(exercises[1].category == "Fitness")
-        XCTAssert(exercises[2].category == "Football")
+        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
+                
+        let exercises = try! await data.getExercisesAsync()
+        
+        guard let exercisesFetched = exercises else {
+            XCTFail("Should return a list of Exercises")
+            return
+        }
+                        
+        XCTAssert(exercisesFetched.count == 3)
+        XCTAssert(exercisesFetched[0].category == "Running")
+        XCTAssert(exercisesFetched[1].category == "Fitness")
+        XCTAssert(exercisesFetched[2].category == "Football")
     }
 }

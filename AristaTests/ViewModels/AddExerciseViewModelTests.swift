@@ -11,6 +11,7 @@ import Combine
 
 @testable import Arista
 
+@MainActor
 final class AddExerciseViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
@@ -34,23 +35,27 @@ final class AddExerciseViewModelTests: XCTestCase {
     }
     
     //ajouter un exercice et voir s'il y en a un
-    func test_WhenNoExerciseIsInDatabase_AddAnExercise_CheckInDB() {
+    func test_WhenNoExerciseIsInDatabase_AddAnExercise_CheckInDB() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
-        let viewModel = AddExerciseViewModel(context: persistenceController.container.viewContext)
+        let viewModel = AddExerciseViewModel(context: PersistenceController.shared.context)
+        
         // add an exercise
         viewModel.intensity = 1
         viewModel.duration = 30
         viewModel.startTime = Date()
         viewModel.category = "Football"
-        let _ = viewModel.addExercise()
-        let expectation = XCTestExpectation(description: "fetch empty list of exercise")
+
+        let expectation = [XCTestExpectation(description: "fetch empty list of exercise")]
+        
+        let _ = await viewModel.addExercise()
         
         // get the exercise from db
-        let viewModelExerciseList = ExerciseListViewModel(context: persistenceController.container.viewContext)
+        let viewModelExerciseList = ExerciseListViewModel(context: PersistenceController.shared.context)
         
+        await viewModelExerciseList.fetchExercises()
+                
         
         viewModelExerciseList.$exercises
             .sink { exercises in
@@ -58,104 +63,19 @@ final class AddExerciseViewModelTests: XCTestCase {
                 XCTAssert(exercises.first?.category == "Football")
                 XCTAssert(exercises.first?.duration == 30)
                 XCTAssert(exercises.first?.intensity == 1)
-                expectation.fulfill()
+                expectation.first?.fulfill()
             }
             .store(in: &cancellables)
     
-        wait(for: [expectation], timeout: 10)
+        await fulfillment(of: expectation)
     }
     
     // tester l'alerte
     func test_ToTriggerAlert() {
-        let viewModel = SleepHistoryViewModel(context: fakePersistentContainer.viewContext)
+        let viewModel = AddExerciseViewModel(context: fakePersistentContainer.viewContext)
         
         XCTAssert(viewModel.showAlert == true)
         XCTAssertNotNil(viewModel.alertReason)
-    }
-    
-    
-    func test_WhenAddingOneExerciseInDatabase_FetchExercise_ReturnAListContainingTheExercise() {
-        // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
-        
-        let date = Date()
-        
-        addExercice(context: persistenceController.container.viewContext,
-                    category: "Football",
-                    duration: 10,
-                    intensity: 5,
-                    startDate: date,
-                    userFirstName: "Ericw",
-                    userLastName: "Marcus")
-        
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch empty list of exercise")
-        
-        viewModel.$exercises
-            .sink { exercises in
-                XCTAssert(exercises.isEmpty == false)
-                XCTAssert(exercises.first?.category == "Football")
-                XCTAssert(exercises.first?.duration == 10)
-                XCTAssert(exercises.first?.intensity == 5)
-                XCTAssert(exercises.first?.startDate == date)
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [expectation], timeout: 10)
-    }
-    
-    
-    
-    func test_WhenAddingMultipleExerciseInDatabase_FetchExercise_ReturnAListContainingTheExerciseInTheRightOrder() {
-        // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
-        
-        let date1 = Date()
-        let date2 = Date(timeIntervalSinceNow: -(60*60*24))
-        let date3 = Date(timeIntervalSinceNow: -(60*60*24*2))
-        
-        addExercice(context: persistenceController.container.viewContext,
-                    category: "Football",
-                    duration: 10,
-                    intensity: 5,
-                    startDate: date1,
-                    userFirstName: "Ericn",
-                    userLastName: "Marcusi")
-        
-        addExercice(context: persistenceController.container.viewContext,
-                    category: "Running",
-                    duration: 120,
-                    intensity: 1,
-                    startDate: date3,
-                    userFirstName: "Ericb",
-                    userLastName: "Marceau")
-        
-        addExercice(context: persistenceController.container.viewContext,
-                    category: "Fitness",
-                    duration: 30,
-                    intensity: 5,
-                    startDate: date2,
-                    userFirstName: "Frédericp",
-                    userLastName: "Marcus")
-        
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch exercises")
-        
-        viewModel.$exercises
-            .sink { exercises in
-                XCTAssert(exercises.count == 3)
-                XCTAssert(exercises[0].category == "Running")
-                XCTAssert(exercises[1].category == "Fitness")
-                XCTAssert(exercises[2].category == "Football")
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-
-        wait(for: [expectation], timeout: 10)
-        
     }
 
     private func emptyEntities(context: NSManagedObjectContext) {

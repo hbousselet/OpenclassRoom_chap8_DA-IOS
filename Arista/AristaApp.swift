@@ -14,24 +14,23 @@ struct AristaApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                UserDataView(viewModel: UserDataViewModel())
-                    .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                UserDataView(viewModel: UserDataViewModel(context: PersistenceController.shared.context))
+                    .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .tabItem {
                         Label("Utilisateur", systemImage: "person")
                     }
                 
-                ExerciseListView(viewModel: ExerciseListViewModel(context: persistenceController.container.viewContext))
-                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                ExerciseListView(viewModel: ExerciseListViewModel(context: PersistenceController.shared.context))
+                    .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .tabItem {
                         Label("Exercices", systemImage: "flame")
                     }
                 
-                SleepHistoryView(viewModel: SleepHistoryViewModel(context: persistenceController.container.viewContext))
-                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                SleepHistoryView(viewModel: SleepHistoryViewModel(context: PersistenceController.shared.context))
+                    .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .tabItem {
                         Label("Sommeil", systemImage: "moon")
                     }
-                
             }
         }
     }

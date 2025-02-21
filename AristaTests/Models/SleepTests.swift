@@ -45,20 +45,24 @@ final class SleepTests: XCTestCase {
         try! context.save()
     }
     
-    func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() {
+    func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
-                
-        let sleeps = try! Sleep.getSleeps(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
-        XCTAssert(sleeps.isEmpty == true)
+        let data = SleepRepository(viewContext: PersistenceController.shared.context)
+                
+        let sleeps = try! await data.getSleepsAsync()
+        
+        guard let sleepsFetched = sleeps else {
+            XCTFail("Should return a list of Sleep")
+            return
+        }
+        XCTAssert(sleepsFetched.isEmpty == true)
     }
     
-    func test_WhenAddingMultipleSleepsInDatabase_GetSleeps_ReturnAListContainingTheSleepsInTheRightOrder() {
+    func test_WhenAddingMultipleSleepsInDatabase_GetSleeps_ReturnAListContainingTheSleepsInTheRightOrder() async {
         // Clean manually all data
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        emptyEntities(context: PersistenceController.shared.context)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -66,32 +70,39 @@ final class SleepTests: XCTestCase {
         
         
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 10,
                     quality: 5,
                     startDate: date1,
                     userFirstName: "Erica",
                     userLastName: "Marcusi")
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 120,
                     quality: 1,
                     startDate: date3,
                     userFirstName: "Erice",
                     userLastName: "Marceau")
         
-        addSleep(context: persistenceController.container.viewContext,
+        addSleep(context: PersistenceController.shared.context,
                     duration: 30,
                     quality: 5,
                     startDate: date2,
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
-                
-        let sleeps = try! Sleep.getSleeps(context: persistenceController.container.viewContext)
         
-        XCTAssert(sleeps.count == 3)
-        XCTAssert(sleeps[0].duration == 120)
-        XCTAssert(sleeps[1].duration == 30)
-        XCTAssert(sleeps[2].duration == 10)
+        let data = SleepRepository(viewContext: PersistenceController.shared.context)
+                
+        let sleeps = try! await data.getSleepsAsync()
+        
+        guard let sleepsFetched = sleeps else {
+            XCTFail("Should return a list of Sleep")
+            return
+        }
+                        
+        XCTAssert(sleepsFetched.count == 3)
+        XCTAssert(sleepsFetched[0].duration == 120)
+        XCTAssert(sleepsFetched[1].duration == 30)
+        XCTAssert(sleepsFetched[2].duration == 10)
     }
 }

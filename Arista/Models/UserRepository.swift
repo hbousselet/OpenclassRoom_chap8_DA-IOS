@@ -8,25 +8,34 @@
 import Foundation
 import CoreData
 
+//protocol Repository {
+//    func fetchResult
+//}
+
 class UserRepository {
-    private var viewContext: NSManagedObjectContext
+    private var viewContext: NSManagedObjectContext?
+    var initializationError: ((Error) -> Void)?
     
-    init(viewContext: NSManagedObjectContext) {
-        self.viewContext = viewContext
+    init(viewContext: NSManagedObjectContext?) {
+        if let viewContext = viewContext {
+            self.viewContext = viewContext
+        } else {
+            initializationError?(NSError(domain: "com.example", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to initialize context"]))
+                    }
     }
     
     func getUser() throws -> User? {
         let request = NSFetchRequest<User>(entityName: "User")
         request.fetchLimit = 1
-        return try viewContext.fetch(request).first
+        return try viewContext?.fetch(request).first
     }
     
     func getUserAsync() async throws -> User? {
-        await viewContext.perform {
+        await viewContext?.perform {
             let request = NSFetchRequest<User>(entityName: "User")
             request.fetchLimit = 1
             do {
-                let fetchResult = try self.viewContext.fetch(request).first
+                let fetchResult = try self.viewContext?.fetch(request).first
                 return fetchResult
             } catch let error as NSError {
                 print("Erreur pour récupérer les données utilisateur : \(error), \(error.userInfo)")

@@ -32,7 +32,7 @@ struct ExerciseListView: View {
                 }
                 .onDelete { indexSet in
                     withAnimation {
-                        viewModel.deleteExercise(at: indexSet)
+                        deleteRow(with: indexSet)
                     }
                 }
             }
@@ -47,27 +47,28 @@ struct ExerciseListView: View {
             }) {
                 Image(systemName: "plus")
             })
-        }
-        .sheet(isPresented: $showingAddExerciseView, onDismiss: {
-            Task {
+            
+            .sheet(isPresented: $showingAddExerciseView, onDismiss: {
+                Task {
+                    await viewModel.fetchExercises()
+                }
+            }) {
+                AddExerciseView(viewModel: AddExerciseViewModel())
+            }
+            .alert(
+                "Error to load exercise datas.",
+                isPresented: $viewModel.showAlert,
+                presenting: viewModel.alertReason.failureReason,
+                actions: { reason in
+                    Button("OK", role: .cancel) { }
+                },
+                message: { reason in
+                    Text(reason)
+                }
+            )
+            .task {
                 await viewModel.fetchExercises()
             }
-        }) {
-            AddExerciseView(viewModel: AddExerciseViewModel())
-        }
-        .alert(
-            "Error to load exercise datas.",
-            isPresented: $viewModel.showAlert,
-            presenting: viewModel.alertReason.failureReason,
-            actions: { reason in
-                Button("OK", role: .cancel) { }
-            },
-            message: { reason in
-                Text(reason)
-            }
-        )
-        .task {
-            await viewModel.fetchExercises()
         }
     }
     
@@ -85,6 +86,12 @@ struct ExerciseListView: View {
             return "bicycle"
         default:
             return "questionmark"
+        }
+    }
+    
+    private func deleteRow(with indexSet: IndexSet) {
+        Task {
+            await viewModel.deleteExercise(at: indexSet)
         }
     }
 }
@@ -110,8 +117,4 @@ struct IntensityIndicator: View {
             return .gray
         }
     }
-}
-
-#Preview {
-    ExerciseListView(viewModel: ExerciseListViewModel(context: PersistenceController.preview.container.viewContext))
 }

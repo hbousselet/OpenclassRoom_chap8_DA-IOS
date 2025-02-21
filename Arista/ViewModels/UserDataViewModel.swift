@@ -23,40 +23,40 @@ class UserDataViewModel: ObservableObject {
     @Published var wakeUpTimeImagePosition: Position = .zero
     
     @Published var radius: CGFloat = 100
-    var wakeUpIconAngle: Double = 0
     
-    let sleepDurationMinutes: Double = 8 * 60
-    let maxSleepDurationMinutes: Double = 12 * 60
+    let sleepDurationMinutes: Double = 8
+    let maxSleepDurationMinutes: Double = 12
     
-    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+    init(context: NSManagedObjectContext) {
         self.userRepository = UserRepository(viewContext: context)
-        fetchUserData()
-    }
-    
-    private func fetchUserData() {
-        Task {
-            do {
-                guard let user = try await userRepository.getUserAsync() else { return }
-                firstName = user.firstName ?? ""
-                lastName = user.lastName ?? ""
-            } catch {
-                showAlert = true
-                alertReason = .fetchCoreDataFailed(" Not able to fetch users data: \(error.localizedDescription)")
-                print("Not able to fetch users data: \(error.localizedDescription)")
-            }
+        self.userRepository.initializationError = { [weak self] error in
+            self?.alertReason = .fetchCoreDataFailed("error when loading userRepository: \(error.localizedDescription)")
+            self?.showAlert = true
         }
     }
     
-    func reComputePosition() {
-        let angle = 32.4
-        wakeUpTimeImagePosition = Position(x: -1 * Int(radius * cos(angle)),
-                                                  y: -1 * Int(radius * sin(-angle)))
+    func fetchUserData() async {
+        do {
+            guard let user = try await userRepository.getUserAsync() else { return }
+            firstName = user.firstName ?? ""
+            lastName = user.lastName ?? ""
+        } catch {
+            showAlert = true
+            alertReason = .fetchCoreDataFailed(" Not able to fetch users data: \(error.localizedDescription)")
+            print("Not able to fetch users data: \(error.localizedDescription)")
+        }
     }
     
-    func computePosition(of sleep: Double, for radius: Double) -> Position {
-        let angle = (sleep / maxSleepDurationMinutes) * 60
-        return Position(x: Int(radius * cos(.pi * angle)),
-                 y: Int(radius * sin(.pi * angle)))
+    func computePosition() {
+        //need to update position of bedTimeImagePosition and wakeUpTimeImagePosition based on the angle
+        let angleInDegrees = 90.0
+        var angleInRadians = angleInDegrees * .pi / 180.0
+        bedTimeImagePosition = Position(x: Int(self.radius * cos(angleInRadians)),
+                                   y: Int(self.radius * sin(angleInRadians)))
+        let ratioOfSleepInDegrees = 450 - ((sleepDurationMinutes / maxSleepDurationMinutes) * 360) + 1
+        angleInRadians = ratioOfSleepInDegrees * .pi / 180.0
+        wakeUpTimeImagePosition = Position(x: Int(self.radius * cos(angleInRadians)),
+                                             y: Int(self.radius * sin(angleInRadians)))
     }
     
     struct Position: Codable {

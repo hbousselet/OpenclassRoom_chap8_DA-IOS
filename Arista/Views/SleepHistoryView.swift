@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SleepHistoryView: View {
     @ObservedObject var viewModel: SleepHistoryViewModel
-
-        var body: some View {
+    
+    var body: some View {
+        NavigationView {
             List(viewModel.sleepSessions) { session in
                 HStack {
                     QualityIndicator(quality: Int(session.quality))
@@ -29,7 +30,8 @@ struct SleepHistoryView: View {
                     }
                 }
             }
-            .navigationTitle("Historique de Sommeil")
+            
+            .navigationTitle("Sleep History")
             .alert(
                 "Error to load sleep datas.",
                 isPresented: $viewModel.showAlert,
@@ -41,7 +43,11 @@ struct SleepHistoryView: View {
                     Text(reason)
                 }
             )
+            .task {
+                await viewModel.fetchSleepSessions()
+            }
         }
+    }
 }
 
 struct QualityIndicator: View {
@@ -70,8 +76,4 @@ struct QualityIndicator: View {
             return .gray
         }
     }
-}
-
-#Preview {
-    SleepHistoryView(viewModel: SleepHistoryViewModel(context: PersistenceController.preview.container.viewContext))
 }

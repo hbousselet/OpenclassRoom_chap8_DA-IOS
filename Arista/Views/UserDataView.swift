@@ -21,6 +21,7 @@ struct UserDataView: View {
             tips
                 .padding(.top, 20)
         }
+        .navigationTitle("Home")
         .safeAreaPadding(.top)
         .padding(.horizontal, 20)
         .alert(
@@ -34,6 +35,9 @@ struct UserDataView: View {
                 Text(reason)
             }
         )
+        .task {
+            await viewModel.fetchUserData()
+        }
     }
     
     var sayHello: some View {
@@ -64,7 +68,7 @@ struct UserDataView: View {
                     .position(UserDataViewModel.Position.zero.in(geometry))
                 ZStack(alignment: .top) {
                     Circle()
-                        .trim(from: 0.0, to: 0.66)
+                        .trim(from: 0.0, to: (viewModel.sleepDurationMinutes / viewModel.maxSleepDurationMinutes))
                         .stroke(.blue, style: StrokeStyle(
                             lineWidth: 25.0,
                             lineCap: .round,
@@ -73,10 +77,13 @@ struct UserDataView: View {
                         .shadow(radius: 10)
                         .zIndex(1)
                         .position(UserDataViewModel.Position.zero.in(geometry))
-                    Image(systemName: "plus")
+                    Image(systemName: "alarm.fill")
                         .tint(.red)
                         .zIndex(2)
                         .position(viewModel.wakeUpTimeImagePosition.in(geometry))
+                    Image(systemName: "powersleep")
+                        .zIndex(2)
+                        .position(viewModel.bedTimeImagePosition.in(geometry))
                 }
                 Image("clock")
                     .renderingMode(.original)
@@ -88,11 +95,10 @@ struct UserDataView: View {
                 if geometry.size.height > geometry.size.width {
                     viewModel.radius = geometry.size.width / 2
                 } else {
-                    viewModel.radius = geometry.size.width / 2
+                    viewModel.radius = geometry.size.height / 2
                 }
-                viewModel.reComputePosition()
+                viewModel.computePosition()
             }
-//            .padding(.horizontal)
         }
     }
     
@@ -150,12 +156,13 @@ struct UserDataView: View {
                 .font(.headline)
                 .padding(.top)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(uiColor: .lightGray))
+                .fill(Color(uiColor: .systemGray6))
                 .overlay {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("1. I need to sleep at least 7 hours a night.")
+                            Text("I woke up twice during the night.")
                                 .font(.caption)
+                                .foregroundStyle(.black)
                             Button {
                                 
                             } label: {
@@ -174,21 +181,10 @@ struct UserDataView: View {
                             .frame(width: 65, height: 65)
                             .padding()
                     }
+                    .padding(.horizontal)
                 }
                 .frame(height: 100)
                 .foregroundStyle(.background)
         }
     }
-    
-//    private func emojiPosition(at location: CGPoint, in geometry: GeometryProxy) -> Emoji.Position {
-//        let center = geometry.frame(in: .local).center
-//        return Emoji.Position(
-//            x: Int((location.x - center.x - pan.width) / zoom),
-//            y: Int(-(location.y - center.y - pan.height) / zoom)
-//        )
-//    }
-}
-
-#Preview {
-    UserDataView(viewModel: UserDataViewModel(context: PersistenceController.preview.container.viewContext))
 }
