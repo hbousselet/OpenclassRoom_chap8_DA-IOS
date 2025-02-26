@@ -8,48 +8,23 @@
 import Foundation
 import CoreData
 
-class ExerciseRepository {
-    private var viewContext: NSManagedObjectContext
+class ExerciseRepository: Repository {
     
-    init(viewContext: NSManagedObjectContext) {
+    typealias T = Exercise
+    
+    let viewContext: NSManagedObjectContext
+
+    init?(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
     }
     
-    func getExercises() throws -> [Exercise] {
-        let request: NSFetchRequest = NSFetchRequest<Exercise>(entityName: "Exercise")
-        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-        return try viewContext.fetch(request)
-    }
-    
-    func saveExercise(category: String,
-                      duration: Int,
-                      intensity: Int,
-                      startDate: Date) throws {
-        let exercice = Exercise(context: viewContext)
-        exercice.category = category
-        exercice.startDate = startDate
-        exercice.intensity = Int64(intensity)
-        exercice.duration = Int64(duration)
-        do {
-            try viewContext.save()
-        } catch let error as NSError {
-            print("Erreur lors de l'enregistrement du contexte : \(error), \(error.userInfo)")
-        }
-    }
-    
-    func delete(exercises: [Exercise]) {
-        for exercise in exercises {
-            viewContext.delete(exercise)
-        }
-    }
-    
-    func getExercisesAsync() async throws -> [Exercise]? {
+    func getAsync<T>() async throws -> [T]? {
         await viewContext.perform {
-            let request: NSFetchRequest = NSFetchRequest<Exercise>(entityName: "Exercise")
+            let request: NSFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Exercise")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
             do {
                 let fetchResult = try self.viewContext.fetch(request)
-                return fetchResult
+                return fetchResult as? [T]
             } catch let error as NSError {
                 print("Erreur pour récupérer les exercices : \(error), \(error.userInfo)")
                 return nil
@@ -57,7 +32,7 @@ class ExerciseRepository {
         }
     }
     
-    func saveExerciseAsync(category: String,
+    func saveAsync(category: String,
                            duration: Int,
                            intensity: Int,
                            startDate: Date) async throws {

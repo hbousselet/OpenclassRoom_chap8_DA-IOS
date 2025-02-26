@@ -38,27 +38,33 @@ final class UserTests: XCTestCase {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
         
-        let data = UserRepository(viewContext: PersistenceController.shared.context)
+        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
                 
-        let user = try! await data.getUserAsync()
+        guard let usersFetched: [User] = try! await userRepoMock?.getAsync() else {
+            XCTFail("Should return a list of Users")
+            return
+        }
         
-        XCTAssertNil(user)
+        XCTAssert(usersFetched.isEmpty)
     }
     
     func test_WhenHavingOneUserInDatabase_GetUser_ReturnAUser() async {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
         
+        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
+        
         addUser(context: PersistenceController.shared.context,
                 userFirstName: "Pierrot",
                 userLastName: "DelaVega")
         
-        let data = UserRepository(viewContext: PersistenceController.shared.context)
-
                 
-        let user = try! await data.getUserAsync()
+        guard let usersFetched: [User] = try! await userRepoMock?.getAsync() else {
+            XCTFail("Should return a list of Users")
+            return
+        }
         
-        XCTAssert(user?.firstName == "Pierrot")
-        XCTAssert(user?.lastName == "DelaVega")
+        XCTAssert(usersFetched.first?.firstName == "Pierrot")
+        XCTAssert(usersFetched.first?.lastName == "DelaVega")
     }
 }

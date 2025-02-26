@@ -15,15 +15,19 @@ class SleepHistoryViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
     
-    let sleepRepository: SleepRepository
+    let sleepRepository: SleepRepository?
     
-    init(context: NSManagedObjectContext = PersistenceController.shared.context) {
-        self.sleepRepository = SleepRepository(viewContext: context)
+    init(sleepRepository: SleepRepository? = SleepRepository(viewContext: PersistenceController.shared.context)) {
+        self.sleepRepository = sleepRepository
+        if self.sleepRepository == nil {
+            self.showAlert = true
+            self.alertReason = .cantLoadRepository("Not able to load CoreData")
+        }
     }
     
     func fetchSleepSessions() async {
         do {
-            guard let sleeps = try await sleepRepository.getSleepsAsync() else {
+            guard let sleeps: [Sleep] = try await sleepRepository?.getAsync() else {
                 sleepSessions = []
                 return
             }

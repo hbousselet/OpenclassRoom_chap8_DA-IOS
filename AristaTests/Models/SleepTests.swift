@@ -11,13 +11,13 @@ import CoreData
 
 final class SleepTests: XCTestCase {
     
+    
     private func emptyEntities(context: NSManagedObjectContext) {
         let fetchRequest = Sleep.fetchRequest()
-        
         let objects = try! context.fetch(fetchRequest)
         
-        for sleep in objects {
-            context.delete(sleep)
+        for user in objects {
+            context.delete(user)
         }
         try! context.save()
     }
@@ -48,21 +48,20 @@ final class SleepTests: XCTestCase {
     func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() async {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
         
-        let data = SleepRepository(viewContext: PersistenceController.shared.context)
-                
-        let sleeps = try! await data.getSleepsAsync()
-        
-        guard let sleepsFetched = sleeps else {
-            XCTFail("Should return a list of Sleep")
+        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.getAsync() else {
+            XCTFail("Should return a list of Exercises")
             return
         }
-        XCTAssert(sleepsFetched.isEmpty == true)
+        
+        XCTAssert(sleepsFetched.isEmpty)
     }
     
     func test_WhenAddingMultipleSleepsInDatabase_GetSleeps_ReturnAListContainingTheSleepsInTheRightOrder() async {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -91,12 +90,9 @@ final class SleepTests: XCTestCase {
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
         
-        let data = SleepRepository(viewContext: PersistenceController.shared.context)
                 
-        let sleeps = try! await data.getSleepsAsync()
-        
-        guard let sleepsFetched = sleeps else {
-            XCTFail("Should return a list of Sleep")
+        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.getAsync() else {
+            XCTFail("Should return a list of Exercises")
             return
         }
                         

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreData
 
 class AddExerciseViewModel: ObservableObject {
     @Published var category: String = ""
@@ -17,16 +16,19 @@ class AddExerciseViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var alertReason: ErrorHandler = .none
 
-    let exerciseRepository: ExerciseRepository
-
-
-    init(context: NSManagedObjectContext = PersistenceController.shared.context) {
-        self.exerciseRepository = .init(viewContext: context)
+    let exerciseRepository: ExerciseRepository?
+    
+    init(exerciseRepository: ExerciseRepository? = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
+        self.exerciseRepository = exerciseRepository
+        if self.exerciseRepository == nil {
+            self.showAlert = true
+            self.alertReason = .cantLoadRepository("Not able to load CoreData")
+        }
     }
 
     func addExercise() async -> Bool {
         do {
-            try await exerciseRepository.saveExerciseAsync(category: category, duration: duration, intensity: intensity, startDate: startTime)
+            try await exerciseRepository?.saveAsync(category: category, duration: duration, intensity: intensity, startDate: startTime)
             return true
         } catch {
             showAlert = true

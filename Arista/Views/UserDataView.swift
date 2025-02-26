@@ -137,7 +137,8 @@ struct UserDataView: View {
                         .font(.headline)
                 }
                 Text("12.50")
-                .font(.system(size: 12.0, weight: .heavy))            }
+                    .font(.system(size: 12.0, weight: .heavy))
+            }
             .padding(.trailing, 5)
         }
         .background {

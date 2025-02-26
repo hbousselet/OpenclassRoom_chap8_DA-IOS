@@ -7,12 +7,16 @@
 
 import CoreData
 
-struct PersistenceController {
+class PersistenceController {
     private static var _model: NSManagedObjectModel?
     
-    private static func model(name: String) -> NSManagedObjectModel {
+    public static let modelName = "Arista"
+    
+    public static func model(name: String) -> NSManagedObjectModel {
+        print("Yes suis là")
         guard let _model = loadModel(name: name, bundle: Bundle.main) else {
-            fatalError("Unable to load managed object model")
+            print("error bla")
+            return NSManagedObjectModel()
         }
         return _model
     }
@@ -32,10 +36,9 @@ struct PersistenceController {
     static var shared = PersistenceController()
     
     private static var container: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Arista", managedObjectModel: PersistenceController.model(name: "Arista"))
-        if shared.isInMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-        }
+        let container = NSPersistentContainer(name: PersistenceController.modelName,
+                                              managedObjectModel: PersistenceController.model(name: PersistenceController.modelName))
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 print(error.localizedDescription)
@@ -43,9 +46,7 @@ struct PersistenceController {
         }
         return container
     }()
-    
-    var isInMemory: Bool = false
-    
+        
     var context: NSManagedObjectContext {
         return Self.container.viewContext
     }

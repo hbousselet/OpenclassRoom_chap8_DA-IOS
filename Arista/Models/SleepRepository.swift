@@ -8,26 +8,22 @@
 import Foundation
 import CoreData
 
-class SleepRepository {
-    private var viewContext: NSManagedObjectContext
+class SleepRepository: Repository {
+    typealias T = Sleep
     
-    init(viewContext: NSManagedObjectContext) {
+    let viewContext: NSManagedObjectContext
+
+    init?(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
     }
     
-    func getSleeps() throws -> [Sleep] {
-        let request: NSFetchRequest = NSFetchRequest<Sleep>(entityName: "Sleep")
-        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-        return try viewContext.fetch(request)
-    }
-    
-    func getSleepsAsync() async throws -> [Sleep]? {
+    func getAsync<T>() async throws -> [T]? {
         await viewContext.perform {
-            let request: NSFetchRequest = NSFetchRequest<Sleep>(entityName: "Sleep")
+            let request: NSFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Sleep")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
             do {
                 let fetchResult = try self.viewContext.fetch(request)
-                return fetchResult
+                return fetchResult as? [T]
             } catch let error as NSError {
                 print("Erreur pour récupérer les données de sommeil : \(error), \(error.userInfo)")
                 return nil

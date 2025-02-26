@@ -16,21 +16,25 @@ class ExerciseListViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
 
-    let exerciseRepository: ExerciseRepository
-
-    init(context: NSManagedObjectContext = PersistenceController.shared.context) {
-        self.exerciseRepository = .init(viewContext: context)
+    let exerciseRepository: ExerciseRepository?
+    
+    init(exerciseRepository: ExerciseRepository? = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
+        self.exerciseRepository = exerciseRepository
+        if self.exerciseRepository == nil {
+            self.showAlert = true
+            self.alertReason = .cantLoadRepository("Not able to load CoreData")
+        }
     }
     
     func deleteExercise(at offset: IndexSet) async {
         let selectedExercises = offset.map { exercises[$0] }
-        await exerciseRepository.deleteAsync(exercises: selectedExercises)
+        await exerciseRepository?.deleteAsync(exercises: selectedExercises)
         await fetchExercises()
     }
     
     func fetchExercises() async {
         do {
-            guard let exercices = try await exerciseRepository.getExercisesAsync() else {
+            guard let exercices: [Exercise] = try await exerciseRepository?.getAsync() else {
                 exercises = []
                 return
             }

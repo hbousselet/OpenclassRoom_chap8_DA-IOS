@@ -17,7 +17,7 @@ class UserDataViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
     
-    var userRepository: UserRepository
+    var userRepository: (any Repository)?
     
     @Published var bedTimeImagePosition: Position = .zero
     @Published var wakeUpTimeImagePosition: Position = .zero
@@ -27,19 +27,19 @@ class UserDataViewModel: ObservableObject {
     let sleepDurationMinutes: Double = 8
     let maxSleepDurationMinutes: Double = 12
     
-    init(context: NSManagedObjectContext) {
-        self.userRepository = UserRepository(viewContext: context)
-        self.userRepository.initializationError = { [weak self] error in
-            self?.alertReason = .fetchCoreDataFailed("error when loading userRepository: \(error.localizedDescription)")
-            self?.showAlert = true
+    init(userRepository: (any Repository)? = UserRepository(viewContext: PersistenceController.shared.context)) {
+        self.userRepository = userRepository
+        if self.userRepository == nil {
+            self.showAlert = true
+            self.alertReason = .cantLoadRepository("Not able to load the repository")
         }
     }
     
     func fetchUserData() async {
         do {
-            guard let user = try await userRepository.getUserAsync() else { return }
-            firstName = user.firstName ?? ""
-            lastName = user.lastName ?? ""
+            guard let user: [User] = try await userRepository?.getAsync() else { return }
+            firstName = user.first?.firstName ?? ""
+            lastName = user.first?.lastName ?? ""
         } catch {
             showAlert = true
             alertReason = .fetchCoreDataFailed(" Not able to fetch users data: \(error.localizedDescription)")

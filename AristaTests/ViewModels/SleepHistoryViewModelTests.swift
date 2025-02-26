@@ -15,31 +15,46 @@ import Combine
 final class SleepHistoryViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    private lazy var fakePersistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "dummyEntity")
-        container.loadPersistentStores(completionHandler: { storeDescription, error in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        })
-        return container
-    }()
-    
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    private func emptyEntities(context: NSManagedObjectContext) {
+        let fetchRequest = Sleep.fetchRequest()
+        let objects = try! context.fetch(fetchRequest)
+        for user in objects {
+            context.delete(user)
+        }
+        try! context.save()
     }
     
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    private func addSleep(context: NSManagedObjectContext,
+                          duration: Int,
+                          quality: Int,
+                          startDate: Date,
+                          userFirstName: String,
+                          userLastName: String) {
         
+        let newUser = User(context: context)
+        newUser.firstName = userFirstName
+        newUser.lastName = userLastName
+        newUser.email = "\(userFirstName).\(userLastName)@example.com"
+        newUser.password = "password"
+        
+        try! context.save()
+        
+        let newSleep = Sleep(context: context)
+        newSleep.duration = Int64(duration)
+        newSleep.quality = Int64(quality)
+        newSleep.startDate = startDate
+        newSleep.user = newUser
+        try! context.save()
     }
     
     func test_WhenNoSleepIsInDatabase_FetchSleep_ReturnEmptyList() {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
         
-        let viewModel = SleepHistoryViewModel(context: PersistenceController.shared.context)
-                
+        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        
+        let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepoMock)
+                        
         XCTAssert(viewModel.sleepSessions.isEmpty)
     }
     
@@ -49,7 +64,9 @@ final class SleepHistoryViewModelTests: XCTestCase {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
         
-        let viewModel = SleepHistoryViewModel(context: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        
+        let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepoMock)
                 
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -97,41 +114,12 @@ final class SleepHistoryViewModelTests: XCTestCase {
     }
     
     func test_ToTriggerAlert() {
-        let viewModel = SleepHistoryViewModel(context: fakePersistentContainer.viewContext)
+        // Clean manually all data
+        emptyEntities(context: PersistenceController.shared.context)
+                
+        let viewModel = SleepHistoryViewModel(sleepRepository: nil)
         
         XCTAssert(viewModel.showAlert == true)
         XCTAssertNotNil(viewModel.alertReason)
-    }
-
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Sleep.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
-        for sleep in objects {
-            context.delete(sleep)
-        }
-        try! context.save()
-    }
-    
-    private func addSleep(context: NSManagedObjectContext,
-                          duration: Int,
-                          quality: Int,
-                          startDate: Date,
-                          userFirstName: String,
-                          userLastName: String) {
-        
-        let newUser = User(context: context)
-        newUser.firstName = userFirstName
-        newUser.lastName = userLastName
-        newUser.email = "\(userFirstName).\(userLastName)@example.com"
-        newUser.password = "password"
-        
-        try! context.save()
-        
-        let newSleep = Sleep(context: context)
-        newSleep.duration = Int64(duration)
-        newSleep.quality = Int64(quality)
-        newSleep.startDate = startDate
-        newSleep.user = newUser
-        try! context.save()
     }
 }

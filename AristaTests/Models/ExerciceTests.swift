@@ -13,11 +13,10 @@ final class ExerciceTests: XCTestCase {
     
     private func emptyEntities(context: NSManagedObjectContext) {
         let fetchRequest = Exercise.fetchRequest()
-        
         let objects = try! context.fetch(fetchRequest)
         
-        for exercice in objects {
-            context.delete(exercice)
+        for user in objects {
+            context.delete(user)
         }
         try! context.save()
     }
@@ -51,22 +50,24 @@ final class ExerciceTests: XCTestCase {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
         
-        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
-                
-        let exercises = try! await data.getExercisesAsync()
+        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
         
-        guard let exercisesFetched = exercises else {
+        do {
+            guard let exercices: [Exercise] = try await exerciseRepoMock?.getAsync() else {
+                XCTFail("Should return a list of Exercises")
+                return
+            }
+            XCTAssert(exercices.isEmpty == true)
+        } catch {
             XCTFail("Should return a list of Exercises")
-            return
         }
-        
-        XCTAssert(exercisesFetched.isEmpty == true)
-        
     }
 
     func test_WhenAddingOneExerciseInDatabase_GetExercise_ReturnAListContainingTheExercise() async {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
+        
+        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
         
         let date = Date()
         
@@ -77,11 +78,8 @@ final class ExerciceTests: XCTestCase {
                     startDate: date,
                     userFirstName: "Eric", userLastName: "Marcus")
         
-        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
                 
-        let exercises = try! await data.getExercisesAsync()
-        
-        guard let exercisesFetched = exercises else {
+        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.getAsync() else {
             XCTFail("Should return a list of Exercises")
             return
         }
@@ -98,6 +96,8 @@ final class ExerciceTests: XCTestCase {
     func test_WhenAddingMultipleExerciseInDatabase_GetExercise_ReturnAListContainingTheExerciseInTheRightOrder() async {
         // Clean manually all data
         emptyEntities(context: PersistenceController.shared.context)
+        
+        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -128,12 +128,8 @@ final class ExerciceTests: XCTestCase {
                     startDate: date2,
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
-        
-        let data = ExerciseRepository(viewContext: PersistenceController.shared.context)
-                
-        let exercises = try! await data.getExercisesAsync()
-        
-        guard let exercisesFetched = exercises else {
+                        
+        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.getAsync() else {
             XCTFail("Should return a list of Exercises")
             return
         }
