@@ -10,26 +10,37 @@ import CoreData
 @testable import Arista
 
 final class ExerciseAddTests: XCTestCase {
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Exercise.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
+    
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
         
-        for user in objects {
-            context.delete(user)
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     //ajouter un Exercice => fetch qu'il y a que un
     func test_WhenNoExerciseIsInDatabase_AddAnExercise_ReturnAnExerciese() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
 
         let date = Date()
                             
         do {
-            try await exerciseRepoMock?.saveAsync(category: "Football",
+            try await exerciseRepoMock?.save(category: "Football",
                                       duration: 60,
                                       intensity: 8,
                                       startDate: date)
@@ -37,7 +48,7 @@ final class ExerciseAddTests: XCTestCase {
             XCTAssertNil(error)
         }
         
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.getAsync() else {
+        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
             XCTFail("Should return a list of Exercises")
             return
         }
@@ -50,26 +61,24 @@ final class ExerciseAddTests: XCTestCase {
     }
     
     func test_WhenNoExerciseIsInDatabase_AddSeveralExercises_ReturnExercises() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         
         let date = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
         let date3 = Date(timeIntervalSinceNow: -(60*60*24*2))
                 
         do {
-            try await exerciseRepoMock?.saveAsync(category: "Football",
+            try await exerciseRepoMock?.save(category: "Football",
                                              duration: 60,
                                              intensity: 8,
                                              startDate: date)
             
-            try await exerciseRepoMock?.saveAsync(category: "Baseball",
+            try await exerciseRepoMock?.save(category: "Baseball",
                                              duration: 70,
                                              intensity: 9,
                                              startDate: date2)
             
-            try await exerciseRepoMock?.saveAsync(category: "Rugby",
+            try await exerciseRepoMock?.save(category: "Rugby",
                                              duration: 80,
                                              intensity: 1,
                                              startDate: date3)
@@ -78,7 +87,7 @@ final class ExerciseAddTests: XCTestCase {
             XCTAssertNil(error)
         }
         
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.getAsync() else {
+        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
             XCTFail("Should return a list of Exercises")
             return
         }

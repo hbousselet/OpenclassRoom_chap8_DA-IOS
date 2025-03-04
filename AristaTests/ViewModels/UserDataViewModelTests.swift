@@ -15,6 +15,28 @@ import Combine
 final class UserDataViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
+        
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
+        }
+        
+        return persistentContainer
+    }()
+    
     private func emptyEntities(context: NSManagedObjectContext) {
         let fetchRequest = User.fetchRequest()
         let objects = try! context.fetch(fetchRequest)
@@ -38,10 +60,7 @@ final class UserDataViewModelTests: XCTestCase {
     }
     
     func test_WhenNoUserIsInDatabase_FetchUser_ReturnNil() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
         
         let viewModel = UserDataViewModel(userRepository: userRepoMock)
         await viewModel.fetchUserData()
@@ -54,13 +73,11 @@ final class UserDataViewModelTests: XCTestCase {
     
     func test_WhenAUserInDatabase_FetchUser_ReturnAUser() async {
         // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
         
         let viewModel = UserDataViewModel(userRepository: userRepoMock)
                 
-        addUser(context: PersistenceController.shared.context,
+        addUser(context: mockPersistentContainer.viewContext,
                 userFirstName: "Ericw",
                 userLastName: "Marcus")
         
@@ -72,7 +89,7 @@ final class UserDataViewModelTests: XCTestCase {
     
     func test_ToTriggerAlert() async {
         // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
+        emptyEntities(context: mockPersistentContainer.viewContext)
                 
         let viewModel = UserDataViewModel(userRepository: nil)
                 

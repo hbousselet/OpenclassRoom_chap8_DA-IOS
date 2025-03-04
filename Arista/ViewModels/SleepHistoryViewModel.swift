@@ -27,7 +27,7 @@ class SleepHistoryViewModel: ObservableObject {
     
     func fetchSleepSessions() async {
         do {
-            guard let sleeps: [Sleep] = try await sleepRepository?.getAsync() else {
+            guard let sleeps: [Sleep] = try await sleepRepository?.get() else {
                 sleepSessions = []
                 return
             }

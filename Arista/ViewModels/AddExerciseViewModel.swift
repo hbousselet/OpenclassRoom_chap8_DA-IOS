@@ -28,7 +28,7 @@ class AddExerciseViewModel: ObservableObject {
 
     func addExercise() async -> Bool {
         do {
-            try await exerciseRepository?.saveAsync(category: category, duration: duration, intensity: intensity, startDate: startTime)
+            try await exerciseRepository?.save(category: category, duration: duration, intensity: intensity, startDate: startTime)
             return true
         } catch {
             showAlert = true

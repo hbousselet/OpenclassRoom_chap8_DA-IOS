@@ -15,15 +15,27 @@ import Combine
 final class AddExerciseViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Exercise.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
         
-        for user in objects {
-            context.delete(user)
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     private func addExercice(context: NSManagedObjectContext,
                              category: String,
@@ -51,11 +63,8 @@ final class AddExerciseViewModelTests: XCTestCase {
     }
     
     //ajouter un exercice et voir s'il y en a un
-    func test_WhenNoExerciseIsInDatabase_AddAnExercise_CheckInDB() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+    func test_WhenNoExerciseIsInDatabase_AddAnExercise_CheckInDB() async {        
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         
         let viewModel = AddExerciseViewModel(exerciseRepository: exerciseRepoMock)
         

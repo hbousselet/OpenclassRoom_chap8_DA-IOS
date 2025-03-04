@@ -15,15 +15,27 @@ import Combine
 final class ExerciseListViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Exercise.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
         
-        for user in objects {
-            context.delete(user)
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     private func addExercice(context: NSManagedObjectContext,
                              category: String,
@@ -53,9 +65,7 @@ final class ExerciseListViewModelTests: XCTestCase {
     
     func test_WhenNoExerciseIsInDatabase_FetchExercise_ReturnEmptyList() async {
         // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         
         
         let viewModel = ExerciseListViewModel(exerciseRepository: exerciseRepoMock)
@@ -76,14 +86,12 @@ final class ExerciseListViewModelTests: XCTestCase {
     
     func test_WhenAddingOneExerciseInDatabase_FetchExercise_ReturnAListContainingTheExercise() async {
         // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         let viewModel = ExerciseListViewModel(exerciseRepository: exerciseRepoMock)
         
         let date = Date()
         
-        addExercice(context: PersistenceController.shared.context,
+        addExercice(context: mockPersistentContainer.viewContext,
                     category: "Football",
                     duration: 10,
                     intensity: 5,
@@ -97,10 +105,7 @@ final class ExerciseListViewModelTests: XCTestCase {
     
     
     func test_WhenAddingMultipleExerciseInDatabase_FetchExercise_ReturnAListContainingTheExerciseInTheRightOrder() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let exerciseRepoMock = ExerciseRepository(viewContext: PersistenceController.shared.context)
+        let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         let viewModel = ExerciseListViewModel(exerciseRepository: exerciseRepoMock)
         
         let expectation = [XCTestExpectation(description: "fetch one exercise")]
@@ -109,7 +114,7 @@ final class ExerciseListViewModelTests: XCTestCase {
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
         let date3 = Date(timeIntervalSinceNow: -(60*60*24*2))
         
-        addExercice(context: PersistenceController.shared.context,
+        addExercice(context: mockPersistentContainer.viewContext,
                     category: "Football",
                     duration: 10,
                     intensity: 5,
@@ -117,7 +122,7 @@ final class ExerciseListViewModelTests: XCTestCase {
                     userFirstName: "Ericn",
                     userLastName: "Marcusi")
         
-        addExercice(context: PersistenceController.shared.context,
+        addExercice(context: mockPersistentContainer.viewContext,
                     category: "Running",
                     duration: 120,
                     intensity: 1,
@@ -125,7 +130,7 @@ final class ExerciseListViewModelTests: XCTestCase {
                     userFirstName: "Ericb",
                     userLastName: "Marceau")
         
-        addExercice(context: PersistenceController.shared.context,
+        addExercice(context: mockPersistentContainer.viewContext,
                     category: "Fitness",
                     duration: 30,
                     intensity: 5,
@@ -148,10 +153,7 @@ final class ExerciseListViewModelTests: XCTestCase {
         await fulfillment(of: expectation)
     }
     
-    func test_ToTriggerAlert() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
+    func test_ToTriggerAlert() async {        
         let viewModel = ExerciseListViewModel(exerciseRepository: nil)
                 
         XCTAssert(viewModel.showAlert == true)

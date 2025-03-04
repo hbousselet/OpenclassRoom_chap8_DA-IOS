@@ -25,6 +25,6 @@ enum ErrorHandler: Error {
 
 protocol Repository {
     associatedtype T
-    func getAsync<T>() async throws -> [T]?
+    func get<T>() async throws -> [T]?
 }
 

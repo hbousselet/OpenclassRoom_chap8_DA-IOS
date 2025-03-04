@@ -11,16 +11,27 @@ import CoreData
 
 final class SleepTests: XCTestCase {
     
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
     
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Sleep.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
         
-        for user in objects {
-            context.delete(user)
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     private func addSleep(context: NSManagedObjectContext,
                           duration: Int,
@@ -46,11 +57,9 @@ final class SleepTests: XCTestCase {
     }
     
     func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
         let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
         
-        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.getAsync() else {
+        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.get() else {
             XCTFail("Should return a list of Exercises")
             return
         }
@@ -59,9 +68,7 @@ final class SleepTests: XCTestCase {
     }
     
     func test_WhenAddingMultipleSleepsInDatabase_GetSleeps_ReturnAListContainingTheSleepsInTheRightOrder() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: mockPersistentContainer.viewContext)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
@@ -69,21 +76,21 @@ final class SleepTests: XCTestCase {
         
         
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 10,
                     quality: 5,
                     startDate: date1,
                     userFirstName: "Erica",
                     userLastName: "Marcusi")
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 120,
                     quality: 1,
                     startDate: date3,
                     userFirstName: "Erice",
                     userLastName: "Marceau")
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 30,
                     quality: 5,
                     startDate: date2,
@@ -91,7 +98,7 @@ final class SleepTests: XCTestCase {
                     userLastName: "Marcus")
         
                 
-        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.getAsync() else {
+        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.get() else {
             XCTFail("Should return a list of Exercises")
             return
         }

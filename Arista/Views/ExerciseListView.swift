@@ -92,6 +92,7 @@ struct ExerciseListView: View {
     private func deleteRow(with indexSet: IndexSet) {
         Task {
             await viewModel.deleteExercise(at: indexSet)
+            await viewModel.fetchExercises()
         }
     }
 }

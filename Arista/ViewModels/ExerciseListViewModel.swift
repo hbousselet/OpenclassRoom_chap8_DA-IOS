@@ -29,12 +29,11 @@ class ExerciseListViewModel: ObservableObject {
     func deleteExercise(at offset: IndexSet) async {
         let selectedExercises = offset.map { exercises[$0] }
         await exerciseRepository?.deleteAsync(exercises: selectedExercises)
-        await fetchExercises()
     }
     
     func fetchExercises() async {
         do {
-            guard let exercices: [Exercise] = try await exerciseRepository?.getAsync() else {
+            guard let exercices: [Exercise] = try await exerciseRepository?.get() else {
                 exercises = []
                 return
             }

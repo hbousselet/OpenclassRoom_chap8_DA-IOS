@@ -15,14 +15,27 @@ import Combine
 final class SleepHistoryViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = Sleep.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
-        for user in objects {
-            context.delete(user)
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
+        
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     private func addSleep(context: NSManagedObjectContext,
                           duration: Int,
@@ -48,10 +61,7 @@ final class SleepHistoryViewModelTests: XCTestCase {
     }
     
     func test_WhenNoSleepIsInDatabase_FetchSleep_ReturnEmptyList() {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: mockPersistentContainer.viewContext)
         
         let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepoMock)
                         
@@ -61,10 +71,7 @@ final class SleepHistoryViewModelTests: XCTestCase {
     
     
     func test_WhenAddingSeveralSleepsInDatabase_FetchSleeos_ReturnAListContainingTheSleeps() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: mockPersistentContainer.viewContext)
         
         let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepoMock)
                 
@@ -74,21 +81,21 @@ final class SleepHistoryViewModelTests: XCTestCase {
         
         
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 10,
                     quality: 5,
                     startDate: date1,
                     userFirstName: "Erica",
                     userLastName: "Marcusi")
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 120,
                     quality: 1,
                     startDate: date3,
                     userFirstName: "Erice",
                     userLastName: "Marceau")
         
-        addSleep(context: PersistenceController.shared.context,
+        addSleep(context: mockPersistentContainer.viewContext,
                     duration: 30,
                     quality: 5,
                     startDate: date2,
@@ -114,9 +121,6 @@ final class SleepHistoryViewModelTests: XCTestCase {
     }
     
     func test_ToTriggerAlert() {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-                
         let viewModel = SleepHistoryViewModel(sleepRepository: nil)
         
         XCTAssert(viewModel.showAlert == true)

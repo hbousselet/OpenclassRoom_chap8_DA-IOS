@@ -17,7 +17,7 @@ class UserRepository: Repository {
         self.viewContext = viewContext
     }
 
-    func getAsync<T>() async throws -> [T]? {
+    func get<T>() async throws -> [T]? {
         await viewContext.perform {
             let request = NSFetchRequest<NSManagedObject>(entityName: "User")
             request.fetchLimit = 1

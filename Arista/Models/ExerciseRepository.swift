@@ -18,7 +18,7 @@ class ExerciseRepository: Repository {
         self.viewContext = viewContext
     }
     
-    func getAsync<T>() async throws -> [T]? {
+    func get<T>() async throws -> [T]? {
         await viewContext.perform {
             let request: NSFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Exercise")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
@@ -32,7 +32,7 @@ class ExerciseRepository: Repository {
         }
     }
     
-    func saveAsync(category: String,
+    func save(category: String,
                            duration: Int,
                            intensity: Int,
                            startDate: Date) async throws {

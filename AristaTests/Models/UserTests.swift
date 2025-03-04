@@ -11,15 +11,27 @@ import CoreData
 
 final class UserTests: XCTestCase {
     
-    private func emptyEntities(context: NSManagedObjectContext) {
-        let fetchRequest = User.fetchRequest()
-        let objects = try! context.fetch(fetchRequest)
+    lazy var model: NSManagedObjectModel = {
+        return PersistenceController.model(name: PersistenceController.modelName)
+    }()
+    
+    lazy var mockPersistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        description.shouldAddStoreAsynchronously = false
         
-        for user in objects {
-            context.delete(user)
+        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer.loadPersistentStores { (description, error) in
+            precondition(description.type == NSInMemoryStoreType)
+            
+            if let error = error {
+                fatalError("Unable to create in memory persistent store")
+            }
         }
-        try! context.save()
-    }
+        
+        return persistentContainer
+    }()
     
     private func addUser(context: NSManagedObjectContext,
                          userFirstName: String,
@@ -35,12 +47,9 @@ final class UserTests: XCTestCase {
     }
     
     func test_WhenNoUserIsInDatabase_GetUser_ReturnEmptyList() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
-        
-        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
                 
-        guard let usersFetched: [User] = try! await userRepoMock?.getAsync() else {
+        guard let usersFetched: [User] = try! await userRepoMock?.get() else {
             XCTFail("Should return a list of Users")
             return
         }
@@ -49,17 +58,14 @@ final class UserTests: XCTestCase {
     }
     
     func test_WhenHavingOneUserInDatabase_GetUser_ReturnAUser() async {
-        // Clean manually all data
-        emptyEntities(context: PersistenceController.shared.context)
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
         
-        let userRepoMock = UserRepository(viewContext: PersistenceController.shared.context)
-        
-        addUser(context: PersistenceController.shared.context,
+        addUser(context: mockPersistentContainer.viewContext,
                 userFirstName: "Pierrot",
                 userLastName: "DelaVega")
         
                 
-        guard let usersFetched: [User] = try! await userRepoMock?.getAsync() else {
+        guard let usersFetched: [User] = try! await userRepoMock?.get() else {
             XCTFail("Should return a list of Users")
             return
         }

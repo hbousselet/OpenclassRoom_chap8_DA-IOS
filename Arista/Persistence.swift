@@ -38,7 +38,6 @@ class PersistenceController {
     private static var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: PersistenceController.modelName,
                                               managedObjectModel: PersistenceController.model(name: PersistenceController.modelName))
-
         container.loadPersistentStores { description, error in
             if let error = error {
                 print(error.localizedDescription)

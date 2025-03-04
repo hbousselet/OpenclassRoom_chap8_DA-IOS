@@ -37,7 +37,7 @@ class UserDataViewModel: ObservableObject {
     
     func fetchUserData() async {
         do {
-            guard let user: [User] = try await userRepository?.getAsync() else { return }
+            guard let user: [User] = try await userRepository?.get() else { return }
             firstName = user.first?.firstName ?? ""
             lastName = user.first?.lastName ?? ""
         } catch {
