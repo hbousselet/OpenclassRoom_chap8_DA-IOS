@@ -36,8 +36,4 @@ class AddExerciseViewModel: ObservableObject {
             return false
         }
     }
-    
-    func checkDurationValidity() {
-        
-    }
 }

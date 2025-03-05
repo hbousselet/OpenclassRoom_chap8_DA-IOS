@@ -15,11 +15,12 @@ import Combine
 final class UserDataViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -34,8 +35,13 @@ final class UserDataViewModelTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     private func emptyEntities(context: NSManagedObjectContext) {
         let fetchRequest = User.fetchRequest()
@@ -50,7 +56,7 @@ final class UserDataViewModelTests: XCTestCase {
                          userFirstName: String,
                          userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -95,5 +101,17 @@ final class UserDataViewModelTests: XCTestCase {
                 
         XCTAssert(viewModel.showAlert == true)
         XCTAssertNotNil(viewModel.alertReason)
+    }
+    
+    func test_ComputeAngles() {
+        // Clean manually all data
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
+        
+        let viewModel = UserDataViewModel(userRepository: userRepoMock)
+        
+        viewModel.computePosition()
+        
+        XCTAssert(viewModel.bedTimeImagePosition == UserDataViewModel.Position(x: 0, y: 100))
+        XCTAssert(viewModel.wakeUpTimeImagePosition == UserDataViewModel.Position(x: -85, y: -51))
     }
 }

@@ -28,16 +28,13 @@ class ExerciseListViewModel: ObservableObject {
     
     func deleteExercise(at offset: IndexSet) async {
         let selectedExercises = offset.map { exercises[$0] }
-        await exerciseRepository?.deleteAsync(exercises: selectedExercises)
+        await exerciseRepository?.delete(exercises: selectedExercises)
     }
     
     func fetchExercises() async {
         do {
-            guard let exercices: [Exercise] = try await exerciseRepository?.get() else {
-                exercises = []
-                return
-            }
-            exercises = exercices
+            let exercices = try await exerciseRepository?.get()
+            exercises = exercices ?? []
         } catch {
             showAlert = true
             alertReason = .fetchCoreDataFailed(" Not able to fetch your exercises datas: \(error.localizedDescription)")

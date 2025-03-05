@@ -11,11 +11,12 @@ import CoreData
 
 final class SleepTests: XCTestCase {
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -30,8 +31,13 @@ final class SleepTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     private func addSleep(context: NSManagedObjectContext,
                           duration: Int,
@@ -40,7 +46,7 @@ final class SleepTests: XCTestCase {
                           userFirstName: String,
                           userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -48,7 +54,7 @@ final class SleepTests: XCTestCase {
         
         try! context.save()
         
-        let newSleep = Sleep(context: context)
+        let newSleep = Sleep(entity: NSEntityDescription.entity(forEntityName: "Sleep", in: context)!, insertInto: context)
         newSleep.duration = Int64(duration)
         newSleep.quality = Int64(quality)
         newSleep.startDate = startDate
@@ -57,7 +63,7 @@ final class SleepTests: XCTestCase {
     }
     
     func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() async {
-        let sleepRepoMock = SleepRepository(viewContext: PersistenceController.shared.context)
+        let sleepRepoMock = SleepRepository(viewContext: mockPersistentContainer.viewContext)
         
         guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.get() else {
             XCTFail("Should return a list of Exercises")

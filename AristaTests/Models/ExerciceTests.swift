@@ -11,11 +11,12 @@ import CoreData
 
 final class ExerciceTests: XCTestCase {
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -30,8 +31,13 @@ final class ExerciceTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
 
     private func addExercice(context: NSManagedObjectContext,
                              category: String,
@@ -41,7 +47,7 @@ final class ExerciceTests: XCTestCase {
                              userFirstName: String,
                              userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -49,7 +55,7 @@ final class ExerciceTests: XCTestCase {
         
         try! context.save()
         
-        let newExercise = Exercise(context: context)
+        let newExercise = Exercise(entity: NSEntityDescription.entity(forEntityName: "Exercise", in: context)!, insertInto: context)
         newExercise.category = category
         newExercise.duration = Int64(duration)
         newExercise.intensity = Int64(intensity)

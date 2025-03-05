@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-class SleepRepository: Repository {
+class SleepRepository {
     typealias T = Sleep
     
     let viewContext: NSManagedObjectContext
@@ -17,17 +17,11 @@ class SleepRepository: Repository {
         self.viewContext = viewContext
     }
     
-    func get<T>() async throws -> [T]? {
-        await viewContext.perform {
+    func get() async throws -> [Sleep] {
+        try await viewContext.perform {
             let request: NSFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Sleep")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-            do {
-                let fetchResult = try self.viewContext.fetch(request)
-                return fetchResult as? [T]
-            } catch let error as NSError {
-                print("Erreur pour récupérer les données de sommeil : \(error), \(error.userInfo)")
-                return nil
-            }
+            return try self.viewContext.fetch(request) as? [Sleep] ?? []
         }
     }
 }

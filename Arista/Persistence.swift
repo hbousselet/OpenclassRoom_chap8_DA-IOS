@@ -13,7 +13,6 @@ class PersistenceController {
     public static let modelName = "Arista"
     
     public static func model(name: String) -> NSManagedObjectModel {
-        print("Yes suis là")
         guard let _model = loadModel(name: name, bundle: Bundle.main) else {
             print("error bla")
             return NSManagedObjectModel()
@@ -53,9 +52,9 @@ class PersistenceController {
 
 
 public extension NSManagedObject {
-  convenience init(using usedContext: NSManagedObjectContext) {
-    let name = String(describing: type(of: self))
-    let entity = NSEntityDescription.entity(forEntityName: name, in: usedContext)!
-    self.init(entity: entity, insertInto: usedContext)
-  }
+    convenience init(context: NSManagedObjectContext) {
+        let name = String(describing: type(of: self))
+        let entity = NSEntityDescription.entity(forEntityName: name, in: context)!
+        self.init(entity: entity, insertInto: context)
+    }
 }

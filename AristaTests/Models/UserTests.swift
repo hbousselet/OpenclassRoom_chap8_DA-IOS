@@ -11,11 +11,12 @@ import CoreData
 
 final class UserTests: XCTestCase {
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -30,14 +31,19 @@ final class UserTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     private func addUser(context: NSManagedObjectContext,
                          userFirstName: String,
                          userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -72,5 +78,12 @@ final class UserTests: XCTestCase {
         
         XCTAssert(usersFetched.first?.firstName == "Pierrot")
         XCTAssert(usersFetched.first?.lastName == "DelaVega")
+    }
+    
+    func test_throwErrorWhenFetchingUsersFails() async {
+        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
+        
+        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "firstName == %@", "John")
     }
 }

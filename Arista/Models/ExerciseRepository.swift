@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-class ExerciseRepository: Repository {
+class ExerciseRepository {
     
     typealias T = Exercise
     
@@ -18,17 +18,11 @@ class ExerciseRepository: Repository {
         self.viewContext = viewContext
     }
     
-    func get<T>() async throws -> [T]? {
-        await viewContext.perform {
+    func get() async throws -> [Exercise] {
+        try await viewContext.perform {
             let request: NSFetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Exercise")
             request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
-            do {
-                let fetchResult = try self.viewContext.fetch(request)
-                return fetchResult as? [T]
-            } catch let error as NSError {
-                print("Erreur pour récupérer les exercices : \(error), \(error.userInfo)")
-                return nil
-            }
+            return try self.viewContext.fetch(request) as? [Exercise] ?? []
         }
     }
     
@@ -50,7 +44,7 @@ class ExerciseRepository: Repository {
         }
     }
     
-    func deleteAsync(exercises: [Exercise]) async {
+    func delete(exercises: [Exercise]) async {
         await viewContext.perform {
             for exercise in exercises {
                 self.viewContext.delete(exercise)

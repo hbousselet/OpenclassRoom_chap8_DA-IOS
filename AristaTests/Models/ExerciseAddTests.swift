@@ -11,11 +11,12 @@ import CoreData
 
 final class ExerciseAddTests: XCTestCase {
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -30,8 +31,13 @@ final class ExerciseAddTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     //ajouter un Exercice => fetch qu'il y a que un
     func test_WhenNoExerciseIsInDatabase_AddAnExercise_ReturnAnExerciese() async {

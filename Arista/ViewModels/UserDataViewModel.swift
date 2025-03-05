@@ -17,17 +17,16 @@ class UserDataViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
     
-    var userRepository: (any Repository)?
+    var userRepository: UserRepository?
     
     @Published var bedTimeImagePosition: Position = .zero
     @Published var wakeUpTimeImagePosition: Position = .zero
-    
     @Published var radius: CGFloat = 100
     
     let sleepDurationMinutes: Double = 8
     let maxSleepDurationMinutes: Double = 12
     
-    init(userRepository: (any Repository)? = UserRepository(viewContext: PersistenceController.shared.context)) {
+    init(userRepository: UserRepository? = UserRepository(viewContext: PersistenceController.shared.context)) {
         self.userRepository = userRepository
         if self.userRepository == nil {
             self.showAlert = true
@@ -59,7 +58,7 @@ class UserDataViewModel: ObservableObject {
                                              y: Int(self.radius * sin(angleInRadians)))
     }
     
-    struct Position: Codable {
+    struct Position: Codable, Equatable {
         var x: Int
         var y: Int
         

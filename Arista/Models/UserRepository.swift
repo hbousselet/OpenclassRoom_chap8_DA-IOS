@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-class UserRepository: Repository {
+class UserRepository {
     let viewContext: NSManagedObjectContext
     
     typealias T = User
@@ -17,17 +17,11 @@ class UserRepository: Repository {
         self.viewContext = viewContext
     }
 
-    func get<T>() async throws -> [T]? {
-        await viewContext.perform {
+    func get() async throws -> [User] {
+        try await viewContext.perform {
             let request = NSFetchRequest<NSManagedObject>(entityName: "User")
             request.fetchLimit = 1
-            do {
-                let fetchResult = try self.viewContext.fetch(request)
-                return fetchResult as? [T]
-            } catch let error as NSError {
-                print("Erreur pour récupérer les données utilisateur : \(error), \(error.userInfo)")
-                return nil
-            }
+            return try self.viewContext.fetch(request) as? [User] ?? []
         }
     }
 }

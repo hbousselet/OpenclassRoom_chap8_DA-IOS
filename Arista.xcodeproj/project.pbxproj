@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		53E587312B235E8F00E4EF99 /* AristaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587302B235E8F00E4EF99 /* AristaApp.swift */; };
 		53E5873A2B235E9000E4EF99 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587392B235E9000E4EF99 /* Persistence.swift */; };
-		53E587472B235E9000E4EF99 /* AristaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587462B235E9000E4EF99 /* AristaTests.swift */; };
 		53E587632B235FF600E4EF99 /* UserDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587622B235FF600E4EF99 /* UserDataView.swift */; };
 		53E587652B23600400E4EF99 /* ExerciseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587642B23600400E4EF99 /* ExerciseListView.swift */; };
 		53E587672B23600C00E4EF99 /* SleepHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E587662B23600C00E4EF99 /* SleepHistoryView.swift */; };
@@ -21,7 +20,6 @@
 		A30F7C0A2D63D8B000B76929 /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30F7C092D63D8B000B76929 /* UserRepository.swift */; };
 		A30F7C0C2D63DA0A00B76929 /* ExerciseRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30F7C0B2D63DA0A00B76929 /* ExerciseRepository.swift */; };
 		A30F7C0E2D63DB3900B76929 /* SleepRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30F7C0D2D63DB3900B76929 /* SleepRepository.swift */; };
-		A3A854952D6DF38B00083211 /* TestPersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A854942D6DF38B00083211 /* TestPersistenceController.swift */; };
 		A3BD44EF2D60D391005B578D /* Arista.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A3BD44ED2D60D391005B578D /* Arista.xcdatamodeld */; };
 		A3BD45102D60DE02005B578D /* DefaultDatas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD450F2D60DE02005B578D /* DefaultDatas.swift */; };
 		A3C10B3D2D61EAB6006F8002 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C10B3C2D61EAB6006F8002 /* Extensions.swift */; };
@@ -54,7 +52,6 @@
 		53E587372B235E9000E4EF99 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		53E587392B235E9000E4EF99 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		53E587422B235E9000E4EF99 /* AristaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AristaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		53E587462B235E9000E4EF99 /* AristaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AristaTests.swift; sourceTree = "<group>"; };
 		53E587622B235FF600E4EF99 /* UserDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataView.swift; sourceTree = "<group>"; };
 		53E587642B23600400E4EF99 /* ExerciseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseListView.swift; sourceTree = "<group>"; };
 		53E587662B23600C00E4EF99 /* SleepHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepHistoryView.swift; sourceTree = "<group>"; };
@@ -66,7 +63,6 @@
 		A30F7C092D63D8B000B76929 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
 		A30F7C0B2D63DA0A00B76929 /* ExerciseRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseRepository.swift; sourceTree = "<group>"; };
 		A30F7C0D2D63DB3900B76929 /* SleepRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepRepository.swift; sourceTree = "<group>"; };
-		A3A854942D6DF38B00083211 /* TestPersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPersistenceController.swift; sourceTree = "<group>"; };
 		A3BD44EE2D60D391005B578D /* Arista.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Arista.xcdatamodel; sourceTree = "<group>"; };
 		A3BD450F2D60DE02005B578D /* DefaultDatas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDatas.swift; sourceTree = "<group>"; };
 		A3C10B3C2D61EAB6006F8002 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -148,8 +144,6 @@
 			children = (
 				A3C10B932D622284006F8002 /* ViewModels */,
 				A3C10B922D62227F006F8002 /* Models */,
-				53E587462B235E9000E4EF99 /* AristaTests.swift */,
-				A3A854942D6DF38B00083211 /* TestPersistenceController.swift */,
 			);
 			path = AristaTests;
 			sourceTree = "<group>";
@@ -338,10 +332,8 @@
 				A3C10B992D622907006F8002 /* AddExerciseViewModelTests.swift in Sources */,
 				A3C10B9B2D622917006F8002 /* SleepHistoryViewModelTests.swift in Sources */,
 				A3C10B912D620571006F8002 /* ExerciseAddTests.swift in Sources */,
-				A3A854952D6DF38B00083211 /* TestPersistenceController.swift in Sources */,
 				A3C10B8D2D62054D006F8002 /* SleepTests.swift in Sources */,
 				A3C10B572D61EEBD006F8002 /* ExerciceTests.swift in Sources */,
-				53E587472B235E9000E4EF99 /* AristaTests.swift in Sources */,
 				A3C10B972D6228F3006F8002 /* UserDataViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

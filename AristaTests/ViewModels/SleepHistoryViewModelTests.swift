@@ -15,11 +15,12 @@ import Combine
 final class SleepHistoryViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -34,8 +35,13 @@ final class SleepHistoryViewModelTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     private func addSleep(context: NSManagedObjectContext,
                           duration: Int,
@@ -44,7 +50,7 @@ final class SleepHistoryViewModelTests: XCTestCase {
                           userFirstName: String,
                           userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -52,7 +58,7 @@ final class SleepHistoryViewModelTests: XCTestCase {
         
         try! context.save()
         
-        let newSleep = Sleep(context: context)
+        let newSleep = Sleep(entity: NSEntityDescription.entity(forEntityName: "Sleep", in: context)!, insertInto: context)
         newSleep.duration = Int64(duration)
         newSleep.quality = Int64(quality)
         newSleep.startDate = startDate
@@ -120,10 +126,36 @@ final class SleepHistoryViewModelTests: XCTestCase {
         await fulfillment(of: expectation)
     }
     
-    func test_ToTriggerAlert() {
+    func test_ToTriggerInitAlert() {
         let viewModel = SleepHistoryViewModel(sleepRepository: nil)
         
         XCTAssert(viewModel.showAlert == true)
+        XCTAssert(viewModel.alertReason == ErrorHandler.cantLoadRepository("Not able to load CoreData"))
+    }
+    
+    func testFetchSleepDataInError() async {
+        guard let sleepRepositoryMock = MockSleepRepository(context: mockPersistentContainer.viewContext) else {
+            return
+        }
+        let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepositoryMock)
+        
+        await viewModel.fetchSleepSessions()
+        XCTAssert(viewModel.showAlert == true)
         XCTAssertNotNil(viewModel.alertReason)
+    }
+}
+
+class MockSleepRepository: SleepRepository {
+    typealias T = Sleep
+    
+    var context: NSManagedObjectContext
+    
+    init?(context: NSManagedObjectContext) {
+        self.context = context
+        super.init(viewContext: context)
+    }
+    
+    override func get() async throws -> [Sleep] {
+        throw ErrorHandler.fetchCoreDataFailed("unable to fetch")
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ErrorHandler: Error {
+enum ErrorHandler: Error, Equatable {
     case none
     case cantLoadRepository(String)
     case fetchCoreDataFailed(String)
@@ -22,9 +22,3 @@ enum ErrorHandler: Error {
         }
     }
 }
-
-protocol Repository {
-    associatedtype T
-    func get<T>() async throws -> [T]?
-}
-

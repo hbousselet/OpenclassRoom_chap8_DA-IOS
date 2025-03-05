@@ -15,11 +15,12 @@ import Combine
 final class AddExerciseViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
-    lazy var model: NSManagedObjectModel = {
-        return PersistenceController.model(name: PersistenceController.modelName)
-    }()
+    var model: NSManagedObjectModel!
     
-    lazy var mockPersistentContainer: NSPersistentContainer = {
+    var mockPersistentContainer: NSPersistentContainer!
+    
+    override func setUp() {
+        model = PersistenceController.model(name: PersistenceController.modelName)
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -34,8 +35,13 @@ final class AddExerciseViewModelTests: XCTestCase {
             }
         }
         
-        return persistentContainer
-    }()
+        mockPersistentContainer = persistentContainer
+    }
+    
+    override func tearDown() {
+        model = nil
+        mockPersistentContainer = nil
+    }
     
     private func addExercice(context: NSManagedObjectContext,
                              category: String,
@@ -45,7 +51,7 @@ final class AddExerciseViewModelTests: XCTestCase {
                              userFirstName: String,
                              userLastName: String) {
         
-        let newUser = User(context: context)
+        let newUser = User(entity: NSEntityDescription.entity(forEntityName: "User", in: context)!, insertInto: context)
         newUser.firstName = userFirstName
         newUser.lastName = userLastName
         newUser.email = "\(userFirstName).\(userLastName)@example.com"
@@ -53,7 +59,7 @@ final class AddExerciseViewModelTests: XCTestCase {
         
         try! context.save()
         
-        let newExercise = Exercise(context: context)
+        let newExercise = Exercise(entity: NSEntityDescription.entity(forEntityName: "Exercise", in: context)!, insertInto: context)
         newExercise.category = category
         newExercise.duration = Int64(duration)
         newExercise.intensity = Int64(intensity)
@@ -103,5 +109,33 @@ final class AddExerciseViewModelTests: XCTestCase {
         
         XCTAssert(viewModel.showAlert == true)
         XCTAssertNotNil(viewModel.alertReason)
+    }
+    
+    func test_RiseAlertWhenCantSaveExercise() async {
+        let exerciseRepoMock = MockExerciseRepository(context: mockPersistentContainer.viewContext)
+        let viewModel = AddExerciseViewModel(exerciseRepository: exerciseRepoMock)
+        
+        let _ = await viewModel.addExercise()
+        XCTAssert(viewModel.showAlert == true)
+        XCTAssertNotNil(viewModel.alertReason)
+    }
+}
+
+class MockExerciseRepository: ExerciseRepository {
+    typealias T = Exercise
+    
+    var context: NSManagedObjectContext
+    
+    init?(context: NSManagedObjectContext) {
+        self.context = context
+        super.init(viewContext: context)
+    }
+    
+    override func get() async throws -> [Exercise] {
+        throw ErrorHandler.fetchCoreDataFailed("unable to fetch")
+    }
+    
+    override func save(category: String, duration: Int, intensity: Int, startDate: Date) async throws {
+        throw ErrorHandler.writeInCoreDataFailed("Not able to write your exercise in DB")
     }
 }
