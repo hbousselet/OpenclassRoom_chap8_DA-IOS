@@ -20,7 +20,6 @@ final class ExerciceTests: XCTestCase {
         let persistentContainer = NSPersistentContainer(name: "Arista", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
-        description.shouldAddStoreAsynchronously = false
         
         persistentContainer.persistentStoreDescriptions = [description]
         persistentContainer.loadPersistentStores { (description, error) in
@@ -68,10 +67,7 @@ final class ExerciceTests: XCTestCase {
         let exerciseRepoMock = ExerciseRepository(viewContext: mockPersistentContainer.viewContext)
         
         do {
-            guard let exercices: [Exercise] = try await exerciseRepoMock?.get() else {
-                XCTFail("Should return a list of Exercises")
-                return
-            }
+            let exercices: [Exercise] = try await exerciseRepoMock.get()
             XCTAssert(exercices.isEmpty == true)
         } catch {
             XCTFail("Should return a list of Exercises")
@@ -91,10 +87,7 @@ final class ExerciceTests: XCTestCase {
                     userFirstName: "Eric", userLastName: "Marcus")
         
                 
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
+        let exercisesFetched: [Exercise] = try! await exerciseRepoMock.get()
         
         XCTAssert(exercisesFetched.isEmpty == false)
         XCTAssert(exercisesFetched.first?.category == "Football")
@@ -138,11 +131,7 @@ final class ExerciceTests: XCTestCase {
                     userFirstName: "Frédericd",
                     userLastName: "Marcus")
                         
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
-                        
+        let exercisesFetched: [Exercise] = try! await exerciseRepoMock.get()
         XCTAssert(exercisesFetched.count == 3)
         XCTAssert(exercisesFetched[0].category == "Running")
         XCTAssert(exercisesFetched[1].category == "Fitness")

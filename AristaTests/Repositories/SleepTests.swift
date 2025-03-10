@@ -65,10 +65,7 @@ final class SleepTests: XCTestCase {
     func test_WhenNoSleepIsInDatabase_GetSleep_ReturnEmptyList() async {
         let sleepRepoMock = SleepRepository(viewContext: mockPersistentContainer.viewContext)
         
-        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
+        let sleepsFetched: [Sleep] = try! await sleepRepoMock.get()
         
         XCTAssert(sleepsFetched.isEmpty)
     }
@@ -104,10 +101,7 @@ final class SleepTests: XCTestCase {
                     userLastName: "Marcus")
         
                 
-        guard let sleepsFetched: [Sleep] = try! await sleepRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
+        let sleepsFetched: [Sleep] = try! await sleepRepoMock.get()
                         
         XCTAssert(sleepsFetched.count == 3)
         XCTAssert(sleepsFetched[0].duration == 120)

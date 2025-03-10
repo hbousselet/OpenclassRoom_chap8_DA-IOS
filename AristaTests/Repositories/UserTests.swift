@@ -55,10 +55,7 @@ final class UserTests: XCTestCase {
     func test_WhenNoUserIsInDatabase_GetUser_ReturnEmptyList() async {
         let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
                 
-        guard let usersFetched: [User] = try! await userRepoMock?.get() else {
-            XCTFail("Should return a list of Users")
-            return
-        }
+        let usersFetched: [User] = try! await userRepoMock.get()
         
         XCTAssert(usersFetched.isEmpty)
     }
@@ -71,19 +68,9 @@ final class UserTests: XCTestCase {
                 userLastName: "DelaVega")
         
                 
-        guard let usersFetched: [User] = try! await userRepoMock?.get() else {
-            XCTFail("Should return a list of Users")
-            return
-        }
+        let usersFetched: [User] = try! await userRepoMock.get()
         
         XCTAssert(usersFetched.first?.firstName == "Pierrot")
         XCTAssert(usersFetched.first?.lastName == "DelaVega")
-    }
-    
-    func test_throwErrorWhenFetchingUsersFails() async {
-        let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)
-        
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "firstName == %@", "John")
     }
 }

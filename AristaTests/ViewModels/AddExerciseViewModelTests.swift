@@ -103,14 +103,6 @@ final class AddExerciseViewModelTests: XCTestCase {
         await fulfillment(of: expectation)
     }
     
-    // tester l'alerte
-    func test_ToTriggerAlert() {
-        let viewModel = AddExerciseViewModel(exerciseRepository: nil)
-        
-        XCTAssert(viewModel.showAlert == true)
-        XCTAssertNotNil(viewModel.alertReason)
-    }
-    
     func test_RiseAlertWhenCantSaveExercise() async {
         let exerciseRepoMock = MockExerciseRepository(context: mockPersistentContainer.viewContext)
         let viewModel = AddExerciseViewModel(exerciseRepository: exerciseRepoMock)
@@ -122,11 +114,9 @@ final class AddExerciseViewModelTests: XCTestCase {
 }
 
 class MockExerciseRepository: ExerciseRepository {
-    typealias T = Exercise
-    
     var context: NSManagedObjectContext
     
-    init?(context: NSManagedObjectContext) {
+    init(context: NSManagedObjectContext) {
         self.context = context
         super.init(viewContext: context)
     }

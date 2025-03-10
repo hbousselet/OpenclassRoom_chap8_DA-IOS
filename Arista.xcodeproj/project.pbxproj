@@ -143,7 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				A3C10B932D622284006F8002 /* ViewModels */,
-				A3C10B922D62227F006F8002 /* Models */,
+				A3C10B922D62227F006F8002 /* Repositories */,
 			);
 			path = AristaTests;
 			sourceTree = "<group>";
@@ -181,7 +181,7 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		A3C10B922D62227F006F8002 /* Models */ = {
+		A3C10B922D62227F006F8002 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
 				A3C10B562D61EEBD006F8002 /* ExerciceTests.swift */,
@@ -189,7 +189,7 @@
 				A3C10B8E2D62055F006F8002 /* UserTests.swift */,
 				A3C10B902D620571006F8002 /* ExerciseAddTests.swift */,
 			);
-			path = Models;
+			path = Repositories;
 			sourceTree = "<group>";
 		};
 		A3C10B932D622284006F8002 /* ViewModels */ = {

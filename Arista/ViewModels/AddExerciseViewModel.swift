@@ -16,19 +16,15 @@ class AddExerciseViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var alertReason: ErrorHandler = .none
 
-    let exerciseRepository: ExerciseRepository?
+    let exerciseRepository: ExerciseRepository
     
-    init(exerciseRepository: ExerciseRepository? = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
+    init(exerciseRepository: ExerciseRepository = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
         self.exerciseRepository = exerciseRepository
-        if self.exerciseRepository == nil {
-            self.showAlert = true
-            self.alertReason = .cantLoadRepository("Not able to load CoreData")
-        }
     }
 
     func addExercise() async -> Bool {
         do {
-            try await exerciseRepository?.save(category: category, duration: duration, intensity: intensity, startDate: startTime)
+            try await exerciseRepository.save(category: category, duration: duration, intensity: intensity, startDate: startTime)
             return true
         } catch {
             showAlert = true

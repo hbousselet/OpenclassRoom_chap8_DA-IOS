@@ -159,17 +159,8 @@ final class ExerciseListViewModelTests: XCTestCase {
         await fulfillment(of: expectation)
     }
     
-    func test_ToTriggerAlert() async {        
-        let viewModel = ExerciseListViewModel(exerciseRepository: nil)
-                
-        XCTAssert(viewModel.showAlert == true)
-        XCTAssertNotNil(viewModel.alertReason)
-    }
-    
     func testFetchExercisesDataInError() async {
-        guard let exerciseRepoMock = MockExerciseRepository(context: mockPersistentContainer.viewContext) else {
-            return
-        }
+        let exerciseRepoMock = MockExerciseRepository(context: mockPersistentContainer.viewContext)
         let viewModel = ExerciseListViewModel(exerciseRepository: exerciseRepoMock)
         
         await viewModel.fetchExercises()

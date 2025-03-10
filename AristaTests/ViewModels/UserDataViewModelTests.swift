@@ -93,16 +93,6 @@ final class UserDataViewModelTests: XCTestCase {
         XCTAssert(viewModel.lastName == "Marcus")
     }
     
-    func test_ToTriggerAlert() async {
-        // Clean manually all data
-        emptyEntities(context: mockPersistentContainer.viewContext)
-                
-        let viewModel = UserDataViewModel(userRepository: nil)
-                
-        XCTAssert(viewModel.showAlert == true)
-        XCTAssertNotNil(viewModel.alertReason)
-    }
-    
     func test_ComputeAngles() {
         // Clean manually all data
         let userRepoMock = UserRepository(viewContext: mockPersistentContainer.viewContext)

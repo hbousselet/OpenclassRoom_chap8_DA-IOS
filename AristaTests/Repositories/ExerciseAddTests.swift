@@ -46,7 +46,7 @@ final class ExerciseAddTests: XCTestCase {
         let date = Date()
                             
         do {
-            try await exerciseRepoMock?.save(category: "Football",
+            try await exerciseRepoMock.save(category: "Football",
                                       duration: 60,
                                       intensity: 8,
                                       startDate: date)
@@ -54,10 +54,7 @@ final class ExerciseAddTests: XCTestCase {
             XCTAssertNil(error)
         }
         
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
+        let exercisesFetched: [Exercise] = try! await exerciseRepoMock.get()
         
         XCTAssert((exercisesFetched.count == 1))
         XCTAssert(exercisesFetched.first?.category == "Football")
@@ -74,17 +71,17 @@ final class ExerciseAddTests: XCTestCase {
         let date3 = Date(timeIntervalSinceNow: -(60*60*24*2))
                 
         do {
-            try await exerciseRepoMock?.save(category: "Football",
+            try await exerciseRepoMock.save(category: "Football",
                                              duration: 60,
                                              intensity: 8,
                                              startDate: date)
             
-            try await exerciseRepoMock?.save(category: "Baseball",
+            try await exerciseRepoMock.save(category: "Baseball",
                                              duration: 70,
                                              intensity: 9,
                                              startDate: date2)
             
-            try await exerciseRepoMock?.save(category: "Rugby",
+            try await exerciseRepoMock.save(category: "Rugby",
                                              duration: 80,
                                              intensity: 1,
                                              startDate: date3)
@@ -93,10 +90,7 @@ final class ExerciseAddTests: XCTestCase {
             XCTAssertNil(error)
         }
         
-        guard let exercisesFetched: [Exercise] = try! await exerciseRepoMock?.get() else {
-            XCTFail("Should return a list of Exercises")
-            return
-        }
+        let exercisesFetched: [Exercise] = try! await exerciseRepoMock.get()
         
         XCTAssert((exercisesFetched.count == 3))
         XCTAssert(exercisesFetched[0].category == "Rugby")

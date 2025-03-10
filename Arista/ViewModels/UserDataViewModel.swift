@@ -17,7 +17,7 @@ class UserDataViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
     
-    var userRepository: UserRepository?
+    var userRepository: UserRepository
     
     @Published var bedTimeImagePosition: Position = .zero
     @Published var wakeUpTimeImagePosition: Position = .zero
@@ -26,17 +26,13 @@ class UserDataViewModel: ObservableObject {
     let sleepDurationMinutes: Double = 8
     let maxSleepDurationMinutes: Double = 12
     
-    init(userRepository: UserRepository? = UserRepository(viewContext: PersistenceController.shared.context)) {
+    init(userRepository: UserRepository = UserRepository(viewContext: PersistenceController.shared.context)) {
         self.userRepository = userRepository
-        if self.userRepository == nil {
-            self.showAlert = true
-            self.alertReason = .cantLoadRepository("Not able to load the repository")
-        }
     }
     
     func fetchUserData() async {
         do {
-            guard let user: [User] = try await userRepository?.get() else { return }
+            let user: [User] = try await userRepository.get()
             firstName = user.first?.firstName ?? ""
             lastName = user.first?.lastName ?? ""
         } catch {

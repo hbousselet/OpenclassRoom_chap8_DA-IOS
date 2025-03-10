@@ -126,17 +126,8 @@ final class SleepHistoryViewModelTests: XCTestCase {
         await fulfillment(of: expectation)
     }
     
-    func test_ToTriggerInitAlert() {
-        let viewModel = SleepHistoryViewModel(sleepRepository: nil)
-        
-        XCTAssert(viewModel.showAlert == true)
-        XCTAssert(viewModel.alertReason == ErrorHandler.cantLoadRepository("Not able to load CoreData"))
-    }
-    
     func testFetchSleepDataInError() async {
-        guard let sleepRepositoryMock = MockSleepRepository(context: mockPersistentContainer.viewContext) else {
-            return
-        }
+        let sleepRepositoryMock = MockSleepRepository(context: mockPersistentContainer.viewContext) 
         let viewModel = SleepHistoryViewModel(sleepRepository: sleepRepositoryMock)
         
         await viewModel.fetchSleepSessions()
@@ -146,11 +137,9 @@ final class SleepHistoryViewModelTests: XCTestCase {
 }
 
 class MockSleepRepository: SleepRepository {
-    typealias T = Sleep
-    
     var context: NSManagedObjectContext
     
-    init?(context: NSManagedObjectContext) {
+    init(context: NSManagedObjectContext) {
         self.context = context
         super.init(viewContext: context)
     }

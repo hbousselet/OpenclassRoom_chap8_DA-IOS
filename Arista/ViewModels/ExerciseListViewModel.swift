@@ -16,25 +16,21 @@ class ExerciseListViewModel: ObservableObject {
     var showAlert: Bool = false
     var alertReason: ErrorHandler = .none
 
-    let exerciseRepository: ExerciseRepository?
+    let exerciseRepository: ExerciseRepository
     
-    init(exerciseRepository: ExerciseRepository? = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
+    init(exerciseRepository: ExerciseRepository = ExerciseRepository(viewContext: PersistenceController.shared.context)) {
         self.exerciseRepository = exerciseRepository
-        if self.exerciseRepository == nil {
-            self.showAlert = true
-            self.alertReason = .cantLoadRepository("Not able to load CoreData")
-        }
     }
     
     func deleteExercise(at offset: IndexSet) async {
         let selectedExercises = offset.map { exercises[$0] }
-        await exerciseRepository?.delete(exercises: selectedExercises)
+        await exerciseRepository.delete(exercises: selectedExercises)
     }
     
     func fetchExercises() async {
         do {
-            let exercices = try await exerciseRepository?.get()
-            exercises = exercices ?? []
+            let exercices = try await exerciseRepository.get()
+            exercises = exercices
         } catch {
             showAlert = true
             alertReason = .fetchCoreDataFailed(" Not able to fetch your exercises datas: \(error.localizedDescription)")

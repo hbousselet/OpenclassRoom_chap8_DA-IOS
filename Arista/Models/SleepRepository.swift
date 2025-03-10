@@ -9,11 +9,10 @@ import Foundation
 import CoreData
 
 class SleepRepository {
-    typealias T = Sleep
     
     let viewContext: NSManagedObjectContext
 
-    init?(viewContext: NSManagedObjectContext) {
+    init(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
     }
     

@@ -10,10 +10,8 @@ import CoreData
 
 class UserRepository {
     let viewContext: NSManagedObjectContext
-    
-    typealias T = User
-    
-    init?(viewContext: NSManagedObjectContext) {
+        
+    init(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
     }
 
